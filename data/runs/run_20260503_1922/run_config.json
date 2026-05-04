@@ -1,0 +1,18 @@
+{
+  "run_id": "run_20260503_1922",
+  "started_at": "2026-05-03T19:22:00.617246Z",
+  "conditions": [
+    "vendor",
+    "none"
+  ],
+  "n_replicates": 3,
+  "pace_min": 4.0,
+  "pace_max": 6.0,
+  "chunk_size": 0,
+  "chunk_pause": 0,
+  "resume": false,
+  "prompts_source": "prompts/caid_v1.json",
+  "caid_version": "CAID v1.1 \u2014 extended",
+  "product_name": "DataShield Pro",
+  "ended_at": "2026-05-04T06:33:50.062333Z"
+}

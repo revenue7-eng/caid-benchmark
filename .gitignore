@@ -1,5 +1,7 @@
 # Run data — never commit
-data/
+data/*
+!data/runs/
+!data/runs/**
 logs/
 results/
 
