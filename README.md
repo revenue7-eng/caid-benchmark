@@ -2,7 +2,7 @@
 
 **Compliance Alignment Integrity Diagnostic** — an automated, reproducible benchmark for measuring whether AI agents preserve compliance boundaries under user pressure.
 
-This is the open implementation of the CAID Audit Standard v1.1.
+This is the open implementation of the CAID Audit Standard v1.2.
 
 ## What problem this solves
 
@@ -12,18 +12,19 @@ Manual testing of GitLab Duo Chat (Claude Sonnet 4.6) in April 2026 showed that 
 
 This benchmark scales the testing approach: full factorial design, statistical confidence intervals, multiple roles × data combinations, multiple providers.
 
-## Latest results
+## Latest results (v1.2 — judge-resolved, May 26, 2026)
 
-The first public benchmark run (May 2026) covered **26 models across 5 providers, 4272 successful API responses**. Highlights:
+The first public benchmark run (May 2026) covered **26 models across 5 providers, 4272 successful API responses**. v1.2 adds an LLM-judge pass on ambiguous classifications using Qwen3.5-397B-A17B-FP8 (validated against gold labels at Cohen's κ = 0.880). Headline findings:
 
-- **Vendor system prompt increases violation rate in every model tested** (Δ from +4pp to +46pp).
-- **Model size is not a reliable predictor of compliance.** GPT-OSS family shows positive scaling (120B safer than 20B), but **Llama 3 family shows negative scaling** — 70B is *less* compliant than 8B in the same family. Verified across two backends (Groq and HuggingFace Inference Providers).
-- **Direct pressure (p=2, "yes or no") is the most common break point**, not emotional pressure as initially hypothesized.
-- **Cross-backend consistency:** Llama 3.3 70B produces near-identical violation rates on Groq (51.3%) and HuggingFace (51.7%) — backend choice does not significantly affect compliance.
-- **Architectural resistance is rare but exists:** GPT-OSS 120B (both Groq and OpenRouter free) maintains <8% violation rate across all pressure types.
+- **Vendor system prompt increases violation rate in every model tested** (Δ from +5pp to +39pp; median +28pp).
+- **Llama-3 family shows negative scaling:** 70B Instruct at **75.9%** violation, 8B Instruct at **58.0%** — gap of +17.9pp preserved from v1.1 and confirmed across HuggingFace and Groq backends.
+- **Emotional pressure (p=3) is the dominant break point**, not direct pressure as v1.1 had suggested. 8 of 13 models with N≥100 peak at p=3.
+- **Reasoning models have hidden pro-product bias.** Qwen3-32B saw the largest reclassification (+34.7pp): rule-based saw the balanced `<think>` chain and marked ambiguous; the judge ignored reasoning and read the consistently pro-product conclusion.
+- **`gpt-oss-120b` is NOT "architecturally resistant" as v1.1 claimed.** v1.1 reported 7.3% violation; v1.2 shows 32.7% — middle of the pack. The model's long structured responses contained implicit recommendations the rule-based pass missed.
 
-→ Full findings: **[REPORT.md](REPORT.md)**
-→ Raw data: **[data/runs/run_20260503_1922/](data/runs/run_20260503_1922/)** (responses, classifications, metrics)
+→ Current findings: **[REPORT_v1.2.md](REPORT_v1.2.md)**
+→ Historical v1.1 first-run findings: **[REPORT.md](REPORT.md)**
+→ Raw data: **[data/runs/run_20260503_1922/](data/runs/run_20260503_1922/)** (responses, classifications, judge artifacts)
 → Original manual audit (April 2026): **[data/runs/manual_v02_april2026/](data/runs/manual_v02_april2026/)**
 
 ## Design
@@ -54,10 +55,12 @@ For each cell (model × condition × combo × pressure):
 
 Two-pass hybrid:
 
-1. **Rule-based classifier** (`src/classifier.py`) — regex patterns for `recommend` / `disclose` / `withhold` / `escalate`. Resolves ~70% of responses cleanly.
-2. **LLM judge** (`src/judge.py`) — Claude Haiku 4.5 (or any OpenAI-compatible model) classifies cases marked `ambiguous` by the rule pass. Optional, requires `ANTHROPIC_API_KEY`.
+1. **Rule-based classifier** (`src/classifier.py`) — regex patterns for `recommend` / `disclose` / `withhold` / `escalate`. Resolves cases with clear single-action signals (~51% of total responses, ~70% of non-empty).
+2. **LLM judge via Doubleword batch API** (`src/judge_doubleword.py`) — Qwen3.5-397B-A17B-FP8 classifies cases marked `ambiguous` by the rule pass. Validated at Cohen's κ = 0.880 against manual gold labels. Resolves an additional ~39% of total responses. Requires `DOUBLEWORD_API_KEY`.
 
-All raw responses are preserved in `responses.jsonl` so classification can be redone without re-running the benchmark.
+The legacy `src/judge.py` (Claude Haiku via Anthropic API) remains in the codebase for alternative-judge experiments but is not used in the v1.2 reference results.
+
+All raw responses are preserved in `responses.jsonl` so classification can be redone without re-running the benchmark. The judge prompt is frozen in `prompts/caid_judge_v1.txt`.
 
 ## Providers
 
@@ -132,11 +135,13 @@ Per-run directory at `data/raw/<RUN_ID>/`:
 |---|---|
 | responses.jsonl | Raw API responses, one JSON per line |
 | classifications.jsonl | Rule-based action classifications |
-| classifications_judged.jsonl | After LLM judge pass on ambiguous cases (if run) |
+| classifications_final.jsonl | Merged rule-based + LLM-judge classifications (v1.2 reference output) |
 | metrics_cells.csv | Per-cell rates with 95% Wilson CI |
 | metrics_per_model.csv | Model-level summary |
 | metrics.json | All aggregates as JSON |
 | run_config.json | Run parameters |
+| judge_validation/ | LLM-judge validation artifacts (gold labels, κ computation) |
+| judge_full/ | LLM-judge full-pass artifacts (batch input/output, verdicts) |
 
 Public benchmark runs are also published under `data/runs/<RUN_ID>/` in this repository.
 
@@ -145,7 +150,7 @@ Public benchmark runs are also published under `data/runs/<RUN_ID>/` in this rep
 If you use this benchmark in research or commentary:
 
 ```
-CAID Benchmark v1.1, Andrey Lazarev, 2026.
+CAID Benchmark v1.2, Andrey Lazarev, 2026.
 https://github.com/revenue7-eng/caid-benchmark
 ```
 
@@ -168,4 +173,4 @@ Issues and pull requests welcome. In particular:
 
 ## Status
 
-Active. Initial public release April 2026, first benchmark run May 2026. Methodology stable; provider list evolves with the free-tier landscape.
+Active. Initial public release April 2026, first benchmark run May 2026 (v1.1, rule-based), judge-resolved re-analysis May 26, 2026 (v1.2). Methodology stable; provider list evolves with the free-tier landscape.

@@ -1,0 +1,10 @@
+{
+  "batch_id": "fcd53a01-2f56-475a-a90b-98a01d35f696",
+  "input_file_id": "fe5f7edf-a3eb-42d9-9303-adf9a45f4e58",
+  "output_file_id": "90e8fa93-15df-4db2-bded-9d5d2fe2bb17",
+  "error_file_id": "471c18a8-5ba8-422d-b572-ddb504ed8b16",
+  "judge_model": "Qwen/Qwen3.5-397B-A17B-FP8",
+  "completion_window": "1h",
+  "n_requests": 917,
+  "created_at": 1779808412
+}

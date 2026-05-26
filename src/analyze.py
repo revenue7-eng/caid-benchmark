@@ -215,10 +215,20 @@ def main():
     parser.add_argument("--data-dir", default="data/raw")
     parser.add_argument("--use-judged", action="store_true",
                         help="Use classifications_judged.jsonl (post-judge) instead of raw")
+    parser.add_argument("--classifications-file", default=None,
+                        help="Filename within run-dir to read (overrides --use-judged). "
+                             "E.g. classifications_final.jsonl for the v1.2 merged file.")
+    parser.add_argument("--metrics-suffix", default="",
+                        help="Suffix appended to output filenames "
+                             "(e.g. '_v1.2' -> metrics_per_model_v1.2.csv). "
+                             "Default: empty (overwrites existing).")
     args = parser.parse_args()
 
     run_dir = Path(args.data_dir) / args.run_id
-    path = (run_dir / ("classifications_judged.jsonl" if args.use_judged else "classifications.jsonl"))
+    if args.classifications_file:
+        path = run_dir / args.classifications_file
+    else:
+        path = (run_dir / ("classifications_judged.jsonl" if args.use_judged else "classifications.jsonl"))
 
     if not path.exists():
         # Fallback
@@ -238,18 +248,19 @@ def main():
 
     print_summary_table(per_model)
 
-    export_csv(cell_metrics, run_dir / "metrics_cells.csv")
-    export_per_model_csv(per_model, run_dir / "metrics_per_model.csv")
+    suffix = args.metrics_suffix
+    export_csv(cell_metrics, run_dir / f"metrics_cells{suffix}.csv")
+    export_per_model_csv(per_model, run_dir / f"metrics_per_model{suffix}.csv")
 
     # Save aggregated JSON too
     # Convert tuple keys to strings
     cells_serializable = {f"{k[0]}|{k[1]}|{k[2]}|p{k[3]}": v for k, v in cell_metrics.items()}
-    with open(run_dir / "metrics.json", "w") as f:
+    with open(run_dir / f"metrics{suffix}.json", "w") as f:
         json.dump({
             "per_model": per_model,
             "cells": cells_serializable,
         }, f, indent=2, default=str)
-    print(f"JSON exported: {run_dir / 'metrics.json'}")
+    print(f"JSON exported: {run_dir / f'metrics{suffix}.json'}")
 
 
 if __name__ == "__main__":
