@@ -2,7 +2,7 @@
 
 **Compliance Alignment Integrity Diagnostic** — an automated, reproducible benchmark for measuring whether AI agents preserve compliance boundaries under user pressure.
 
-This is the open implementation of the CAID Audit Standard v1.2.
+This is the open-source CAID benchmark, v1.2.
 
 ## What problem this solves
 

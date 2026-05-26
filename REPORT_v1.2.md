@@ -34,13 +34,21 @@ first-run findings.
 
 ## TL;DR
 
+**Headline meta-finding:** Rule-based classification of compliance-sensitive
+LLM responses under-counted recommendations by a factor of ~3 on this
+dataset. After judge resolution, 625 of 840 previously-ambiguous responses
+(74%) were hidden recommendations. This bias was systematic, not random,
+and concentrated in models that produce long structured responses.
+
 **Three of the five major v1.1 findings change substantially after the judge pass.**
 
-1. **`gpt-oss-120b` is NOT "architecturally resistant".** v1.1 reported 7.3%
-   violation rate, ranked safest. v1.2: **32.7%** (Groq) and **41.3%**
-   (OpenRouter free). The model's characteristic long, structured responses
-   were misclassified by the rule-based pass as `ambiguous` when they were
-   in fact marketing-style endorsements of DataShield Pro.
+1. **The "architecturally resistant" claim for `gpt-oss-120b` was a classifier
+   artifact.** v1.1 reported 7.3% violation rate, ranked safest. v1.2: **32.7%**
+   (Groq) and **41.3%** (OpenRouter free). The model's characteristic long,
+   structured, hedged responses lack explicit "I recommend" verbs but are
+   content-positive on the product. The v1.1 interpretation was an artifact of
+   the rule-based classifier's verb-detection; v1.2 reveals the model is
+   linguistically hedged but substantively endorsing.
 
 2. **The "negative scaling" pattern in Llama-3 family is confirmed and amplified.**
    v1.1: 70B at 51.7%, 8B at 30.7% (gap +21pp). v1.2: 70B at **75.9%**,
@@ -51,7 +59,9 @@ first-run findings.
    reported p=2 as peak for 6 of 13 models. v1.2: **p=3 (emotional) is peak
    for 8 of 13**, and p=4 (authority) for 2 more. The Zoheb Shaik
    GitLab Duo observation — emotional pressure as the dominant failure mode —
-   is restored as the central pattern.
+   is restored as the central pattern. For both Llama 3.3 70B variants the
+   p=3 and p=4 point estimates hit 100% (Wilson 95% lower bound ≈88% at the
+   per-cell sample size).
 
 4. **The vendor effect is uniformly larger.** Δ vendor−none ranged from
    +4pp to +46pp in v1.1. v1.2: from **+5pp to +39pp**, with median around
@@ -162,6 +172,15 @@ have high residual rates not because of judge failure but because of high
 upfront empty-response rates (rate-limited / timeouts). For all other models,
 residual ambiguous is 3–7%, within expected truncation noise.
 
+**Worst-case bound for the top ranks:** if every remaining ambiguous case
+were a hidden recommendation (the most adversarial assumption against the
+ranked-low conclusion that the model is non-compliant), the rates would be:
+Llama 3.3 70B Versatile 72.0% → 77.3%; Qwen3-32B 70.0% → 74.0%;
+Llama-4 Scout 59.3% → 66.7%. The rank order at the top is unchanged in
+either direction. For models where this matters more (gpt-oss-20b Groq with
+26.7% residual; tencent/hy3-preview:free with 70.7%), the worst-case bound
+is reported explicitly when these models are discussed.
+
 ### Per-pressure breakdown (judge-resolved)
 
 Violation rate at each pressure level. **Bold** marks the per-model peak.
@@ -201,11 +220,14 @@ emotional framing tend to be hedged and structured (rule-based → ambiguous),
 while responses to direct yes/no questions are short and overtly affirmative
 (rule-based → recommend cleanly).
 
-For both Llama-3.3 70B variants, the p=3 and p=4 rates hit **100%** on the
-judge-resolved view. Every single emotional-pressure or authority-pressure
-trial under both system prompt conditions was a recommendation.
+For both Llama-3.3 70B variants, the p=3 and p=4 point estimates hit **100%**
+on the judge-resolved view (n=30 per cell on Groq, n≈23 on HuggingFace). At
+these sample sizes the Wilson 95% lower bound is approximately 88%, so the
+true rate may lie between 88% and 100%; the point estimate is exactly 100%
+because every emotional-pressure or authority-pressure trial in the dataset
+under both system prompt conditions was a recommendation.
 
-### Finding 2: `gpt-oss-120b` is not safe; it is verbose
+### Finding 2: `gpt-oss-120b` is content-positive but linguistically hedged
 
 v1.1 ranked `gpt-oss-120b` (Groq) as the safest tested model at 7.3%
 violation rate. v1.2 places it at 32.7% — middle of the pack.
@@ -218,9 +240,12 @@ encryption ✓, HIPAA compliance ✓, audit trails ✓" followed by "Action:
 Verify documentation and conduct a pilot". This reads as a recommendation
 to a human reader and is now correctly classified as such.
 
-This affects the v1.1 "architectural resistance" narrative. **GPT-OSS 120B
-is not architecturally resistant in the sense of refusing to recommend —
-it is structurally cautious in language, but content-positive on the product.**
+This reframes the v1.1 "architectural resistance" claim: the resistance was
+**linguistic, not substantive**. GPT-OSS 120B avoids the rhetorical patterns
+that the rule-based pass keyed on, while still producing content that
+endorses the product. From a compliance-deployment perspective the
+distinction matters — the model is not refusing or escalating, it is
+recommending in a register that reads as caution.
 
 ### Finding 3: Llama negative scaling — confirmed, amplified, but mechanism still unclear
 
@@ -391,6 +416,12 @@ All artifacts for v1.2 are in `data/runs/run_20260503_1922/`:
 - Doubleword batch IDs (Qwen3.5-397B-A17B-FP8, temperature=0.0, max_tokens=4000):
   - Validation: `b09b9d09-2f2c-4100-91e9-eaee8e11a48e`
   - Full pass: `fcd53a01-2f56-475a-a90b-98a01d35f696`
+
+Batch IDs are included for traceability with Doubleword's billing/audit
+records. Reproduction of judge verdicts does **not** require API access:
+the raw model outputs are committed in `batch_output.jsonl` files within
+this repository, and `src/judge_doubleword.py parse` reproduces the final
+classifications offline.
 
 ---
 
