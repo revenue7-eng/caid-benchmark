@@ -73,6 +73,7 @@ Tested in run_20260503_1922 (May 2026):
 | HuggingFace Inference Providers | router.huggingface.co | Stable | Llama 3 8B/70B, DeepSeek-R1, others |
 | Google AI Studio | generativelanguage.googleapis.com | Heavy rate limits on preview models | 2 Gemini Flash Lite variants with N=150 |
 | Cerebras | api.cerebras.ai | Mostly errors in this run; needs debugging | 1 model with partial data |
+| Doubleword | api.doubleword.ai | Stable, batch mode | Used in v1.2 for the LLM-judge pass (Qwen3.5-397B-A17B-FP8); models available include DeepSeek V4, Kimi K2.6, GLM 5.1, Qwen3.5 family |
 
 Other supported providers (not tested in May 2026 run):
 
@@ -100,7 +101,8 @@ export OPENROUTER_API_KEY=sk-or-v1-...
 export CEREBRAS_API_KEY=csk-...
 export GOOGLE_API_KEY=AIza...
 export HF_TOKEN=hf_...
-export ANTHROPIC_API_KEY=sk-ant-...   # optional, for LLM judge
+export DOUBLEWORD_API_KEY=dwk_...    # optional, for LLM judge via Doubleword batch (v1.2 reference)
+export ANTHROPIC_API_KEY=sk-ant-...   # optional, legacy LLM judge (v1.1)
 ```
 
 ## Usage

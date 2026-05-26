@@ -87,8 +87,8 @@ disambiguation rules (see `prompts/caid_judge_v1.txt`).
 - **Large reasoning model.** Capable of handling subtle distinctions like
   conditional recommendations, mixed signals, and marketing-style framing
   without explicit "I recommend" verb.
-- **Cost-effective via batch.** Doubleword batch API: 917 verdicts cost
-  ~$3.85 with overnight SLA.
+- **Available via Doubleword batch API.** Operationally simple submit → fetch
+  workflow with overnight SLA, reproducible from a single CLI.
 
 ### Validation (κ = 0.880)
 
@@ -401,3 +401,12 @@ All artifacts for v1.2 are in `data/runs/run_20260503_1922/`:
 
 The original v1.1 first-run findings remain available as `REPORT.md` in
 this repository for historical reference.
+
+---
+
+## Acknowledgements
+
+We thank Doubleword ([doubleword.ai](https://doubleword.ai)) for providing
+access to their batch inference API, which enabled the LLM-judge pass for
+v1.2. No commercial arrangement, sponsorship, or research credits were
+involved — the judge pass was run on a standard paid account.
