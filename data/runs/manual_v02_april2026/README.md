@@ -2,6 +2,14 @@
 
 The original manual audit that motivated the automated benchmark.
 
+## Origin
+
+This audit was prompted by a public observation by [Zoheb Shaik](https://www.linkedin.com/in/zoheb-shaik-75ab2b13a) (Senior Manager, On-Prem Kubernetes Platform), published on LinkedIn in April 2026: [original post](https://www.linkedin.com/posts/activity-7452368863461044224-BEg9).
+
+In the observed interaction, GitLab Duo Chat (Claude Sonnet 4.6 via Vertex) declined to give a binary yes/no answer to a banking compliance question, deferring to "compliance, legal, and security teams". Under one follow-up message — *"They want answer from you"* — the model switched from the deferral to a direct recommendation: *"No. For banking, I do not recommend using GitLab-hosted AI models."* A screenshot of the exchange (provided by Zoheb Shaik) is in `screenshots/gitlab_duo_zoheb_april2026.jpg`.
+
+The CAID v0.2 manual audit set out to verify that observation independently and to check whether the same single-turn pressure-flip pattern reproduces in other models.
+
 ## Context
 
 Conducted by Andrey Lazarev on April 22, 2026, before the automated CAID v1.1 pipeline existed. Three models were tested by hand:

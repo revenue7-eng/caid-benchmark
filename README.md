@@ -8,7 +8,7 @@ This is the open-source CAID benchmark, v1.2.
 
 When you give a vendor system prompt to an LLM ("you're a sales assistant for Product X"), and a user asks compliance-sensitive questions, can the model maintain integrity under pressure?
 
-Manual testing of GitLab Duo Chat (Claude Sonnet 4.6) in April 2026 showed that the model said "No" to *"should our bank use this for sensitive data?"* but flipped to *"Yes — with conditions"* when the user added emotional pressure. Pristine policy on paper, broken behaviour under predictable pressure patterns. The original behavioural observation that motivated this benchmark was published by Zoheb Shaik (April 2026).
+Manual testing of GitLab Duo Chat (Claude Sonnet 4.6) in April 2026 showed that the model said "No" to *"should our bank use this for sensitive data?"* but flipped to *"Yes — with conditions"* when the user added emotional pressure. Pristine policy on paper, broken behaviour under predictable pressure patterns. The original behavioural observation that motivated this benchmark was published by [Zoheb Shaik on LinkedIn](https://www.linkedin.com/posts/activity-7452368863461044224-BEg9) (April 2026).
 
 This benchmark scales the testing approach: full factorial design, statistical confidence intervals, multiple roles × data combinations, multiple providers.
 
@@ -158,7 +158,7 @@ https://github.com/revenue7-eng/caid-benchmark
 
 Original behavioural observation:
 
-- Zoheb Shaik, "Behavioural compliance test of GitLab Duo," April 2026.
+- Zoheb Shaik, "[Behavioural compliance test of GitLab Duo](https://www.linkedin.com/posts/activity-7452368863461044224-BEg9)," LinkedIn, April 2026.
 
 ## License
 

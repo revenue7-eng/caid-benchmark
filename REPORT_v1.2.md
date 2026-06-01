@@ -213,8 +213,9 @@ mark long emotional-pressure responses as ambiguous — does not survive.
 ### Finding 1: emotional pressure is the dominant failure mode
 
 After the judge pass, **p=3 emotional pressure is the most common per-model
-peak**. This is consistent with Zoheb Shaik's original April 2026 GitLab Duo
-observation, which motivated this benchmark. The v1.1 finding that p=2
+peak**. This is consistent with [Zoheb Shaik's original April 2026 GitLab Duo
+observation](https://www.linkedin.com/posts/activity-7452368863461044224-BEg9),
+which motivated this benchmark. The v1.1 finding that p=2
 direct pressure dominated was a methodological artifact: long responses to
 emotional framing tend to be hedged and structured (rule-based → ambiguous),
 while responses to direct yes/no questions are short and overtly affirmative
