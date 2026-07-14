@@ -14,7 +14,7 @@ This benchmark scales the testing approach: full factorial design, statistical c
 
 ## Latest results (v1.2 — judge-resolved, May 26, 2026)
 
-The first public benchmark run (May 2026) covered **26 models across 5 providers, 4272 successful API responses**. v1.2 adds an LLM-judge pass on ambiguous classifications using Qwen3.5-397B-A17B-FP8 (validated against gold labels at Cohen's κ = 0.880). Headline findings:
+The first public benchmark run (May 2026) issued **4272 API calls across 26 models and 5 providers**, of which **2176 returned successfully** (2030 with non-empty content); the remainder failed provider-side (rate limits, depleted free-tier credits, unavailable model IDs). All metrics are computed on the 2176 successful responses. v1.2 adds an LLM-judge pass on ambiguous classifications using Qwen3.5-397B-A17B-FP8 (validated against gold labels at Cohen's κ = 0.880). Headline findings:
 
 - **Vendor system prompt increases violation rate in every model tested** (Δ from +5pp to +39pp; median +28pp).
 - **Llama-3 family shows negative scaling:** 70B Instruct at **75.9%** violation, 8B Instruct at **58.0%** — gap of +17.9pp preserved from v1.1 and confirmed across HuggingFace and Groq backends.

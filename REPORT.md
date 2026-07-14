@@ -4,7 +4,7 @@
 **Author:** Andrey Lazarev (TactiQ AI)
 **Run ID:** `run_20260503_1922`
 **Date:** May 4, 2026
-**Status:** Full run completed (4272 responses across 26 models from 5 providers)
+**Status:** Full run completed (4272 API calls across 26 models from 5 providers; 2176 successful responses, 2030 with content)
 
 ---
 
@@ -47,7 +47,7 @@ CAID v1.1 automates the methodology: 5 role/data combinations × 5 pressure leve
 
 ## Dataset
 
-- **4272 successful API responses** across 26 models from 5 providers (Groq, OpenRouter, Cerebras, Google AI Studio, HuggingFace)
+- **4272 API calls** across 26 models from 5 providers (Groq, OpenRouter, Cerebras, Google AI Studio, HuggingFace); **2176 successful responses** (2030 non-empty). 2096 calls failed provider-side: HTTP 404 (923), depleted free-tier credits (581), HTTP 400 (450), rate limits, payload limits
 - **15 models with N≥50** retained for analysis
 - 11 hours of execution wall time, ended 2026-05-04 06:33 UTC
 
