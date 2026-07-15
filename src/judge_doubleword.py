@@ -1,16 +1,30 @@
 """
 CAID LLM-judge runner for Doubleword Batch API.
 
-Submits ambiguous classifications from a CAID run to a judge model for
-resolution. Reads API key from DOUBLEWORD_API_KEY environment variable.
+Submits classifications from a CAID run to a judge model for resolution.
+Reads API key from DOUBLEWORD_API_KEY environment variable.
 
 Usage:
-    # 1. Prepare batch input
+    # 1a. Prepare batch for ambiguous responses (default)
     python -m src.judge_doubleword prepare \\
         --run-dir data/runs/run_20260503_1922 \\
         --model-filter llama-3.3-70b-versatile \\
         --limit 50 \\
         --output-dir data/runs/run_20260503_1922/judge_validation
+
+    # 1b. Prepare batch for confident-branch recheck
+    python -m src.judge_doubleword prepare \\
+        --run-dir data/runs/run_20260503_1922 \\
+        --action-filter withhold,escalate \\
+        --max-tokens 4000 \\
+        --output-dir data/runs/run_20260503_1922/judge_confident
+
+    # 1c. Prepare batch from explicit call_id list
+    python -m src.judge_doubleword prepare \\
+        --run-dir data/runs/run_20260503_1922 \\
+        --call-ids-file truncated_ids.txt \\
+        --max-tokens 8000 \\
+        --output-dir data/runs/run_20260503_1922/judge_confident/retry8k
 
     # 2. Submit to Doubleword
     python -m src.judge_doubleword submit \\
@@ -29,6 +43,11 @@ Usage:
         --batch-output data/runs/run_20260503_1922/judge_validation/batch_output.jsonl \\
         --input-jsonl data/runs/run_20260503_1922/judge_validation/batch_input.jsonl \\
         --output data/runs/run_20260503_1922/judge_validation/classifications_judged.jsonl
+
+Outputs from `prepare`:
+  - batch_input.jsonl       requests with short custom_ids (c00000, c00001, ...)
+  - custom_id_map.json      {"short_to_full": {"c00000": "full_call_id", ...}}
+  - full_set_meta.jsonl     provenance: prompt, response, original classification
 """
 from __future__ import annotations
 
@@ -74,7 +93,16 @@ def _iter_jsonl(path: Path) -> Iterator[dict]:
 # ---------- Step 1: prepare ----------
 
 def cmd_prepare(args: argparse.Namespace) -> None:
-    """Build a batch_input.jsonl with one request per ambiguous response."""
+    """Build a batch_input.jsonl with one request per matching response.
+
+    Filters:
+      --action-filter: comma-separated actions to include (default: ambiguous).
+                       Use "withhold,escalate" for confident-branch reruns.
+      --call-ids-file: text file with one call_id per line (overrides action
+                       filter; still requires non-empty response_text).
+      --model-filter:  only include responses from this model.
+      --max-tokens:    max_tokens for the judge request (default 4000).
+    """
     run_dir = Path(args.run_dir)
     responses_path = run_dir / "responses.jsonl"
     classifications_path = run_dir / "classifications.jsonl"
@@ -86,36 +114,58 @@ def cmd_prepare(args: argparse.Namespace) -> None:
     for r in _iter_jsonl(responses_path):
         responses[r["call_id"]] = r
 
-    # Filter ambiguous classifications
-    ambiguous: list[tuple[dict, dict]] = []
+    # Explicit call_ids list (overrides action filter)
+    explicit_ids: set[str] | None = None
+    if args.call_ids_file:
+        p = Path(args.call_ids_file)
+        if not p.exists():
+            sys.exit(f"--call-ids-file not found: {p}")
+        explicit_ids = {line.strip() for line in p.read_text().splitlines()
+                        if line.strip()}
+        print(f"Loaded {len(explicit_ids)} call_ids from {p}")
+
+    # Action filter
+    action_set = {a.strip() for a in args.action_filter.split(",")} if args.action_filter else {"ambiguous"}
+
+    # Collect matching cases
+    matched: list[tuple[dict, dict]] = []
     for c in _iter_jsonl(classifications_path):
-        if c.get("action") != "ambiguous":
-            continue
-        r = responses.get(c["call_id"])
+        cid = c["call_id"]
+        if explicit_ids is not None:
+            if cid not in explicit_ids:
+                continue
+        else:
+            if c.get("action") not in action_set:
+                continue
+        r = responses.get(cid)
         if not r:
             continue
         if not (r.get("response_text") or "").strip():
-            # Skip empty responses — they shouldn't go to a judge, they
-            # should be excluded from the dataset entirely. We log them
-            # separately, but don't submit.
             continue
         if args.model_filter and r["model"] != args.model_filter:
             continue
-        ambiguous.append((c, r))
+        matched.append((c, r))
 
     if args.limit:
-        ambiguous = ambiguous[: args.limit]
+        matched = matched[: args.limit]
 
-    if not ambiguous:
-        sys.exit("No ambiguous responses matched filters.")
+    if not matched:
+        sys.exit("No responses matched filters.")
 
     prompt_template = _load_prompt_template()
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     out_path = output_dir / "batch_input.jsonl"
 
+    max_tokens = args.max_tokens
+    id_map: dict[str, str] = {}  # short_id -> full call_id
+
     with out_path.open("w", encoding="utf-8") as f:
-        for c, r in ambiguous:
+        for idx, (c, r) in enumerate(matched):
+            short_id = f"c{idx:05d}"
+            full_id = c["call_id"]
+            id_map[short_id] = full_id
+
             user_content = prompt_template.replace(
                 "{user_prompt}", r["prompt_text"]
             ).replace(
@@ -127,20 +177,47 @@ def cmd_prepare(args: argparse.Namespace) -> None:
                     {"role": "user", "content": user_content},
                 ],
                 "temperature": 0.0,
-                "max_tokens": 250,
+                "max_tokens": max_tokens,
             }
             req = {
-                "custom_id": c["call_id"],
+                "custom_id": short_id,
                 "method": "POST",
                 "url": "/v1/chat/completions",
                 "body": body,
             }
             f.write(json.dumps(req, ensure_ascii=False) + "\n")
 
-    print(f"Wrote {len(ambiguous)} requests to {out_path}")
-    print(f"Model placeholder in body: {args.judge_model_placeholder}")
-    print(f"Models in this batch (original): "
-          f"{sorted({r['model'] for _, r in ambiguous})}")
+    # Write custom_id_map
+    map_path = output_dir / "custom_id_map.json"
+    map_path.write_text(
+        json.dumps({"short_to_full": id_map}, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    # Write full_set_meta.jsonl (provenance)
+    meta_path = output_dir / "full_set_meta.jsonl"
+    with meta_path.open("w", encoding="utf-8") as f:
+        for idx, (c, r) in enumerate(matched):
+            short_id = f"c{idx:05d}"
+            f.write(json.dumps({
+                "call_id": c["call_id"],
+                "short_id": short_id,
+                "model": r["model"],
+                "condition": r.get("condition", ""),
+                "pressure": c.get("pressure", -1),
+                "prompt_text": r["prompt_text"],
+                "response_text": r["response_text"],
+                "original_action": c.get("action"),
+                "original_reasoning": c.get("reasoning", ""),
+            }, ensure_ascii=False) + "\n")
+
+    print(f"Wrote {len(matched)} requests to {out_path}")
+    print(f"  custom_id_map: {map_path} ({len(id_map)} entries)")
+    print(f"  full_set_meta: {meta_path}")
+    print(f"  max_tokens: {max_tokens}")
+    print(f"  action_filter: {action_set if explicit_ids is None else 'N/A (call_ids_file)'}")
+    print(f"  Model placeholder: {args.judge_model_placeholder}")
+    print(f"  Models in batch: {sorted({r['model'] for _, r in matched})}")
     print("Next step: review batch_input.jsonl, then run `submit`.")
 
 
@@ -225,10 +302,13 @@ def cmd_fetch(args: argparse.Namespace) -> None:
 def _extract_json_verdict(content: str):
     """Robustly extract a JSON object from the model's output.
 
-    Handles three shapes:
+    Handles:
     1. ```json\n{...}\n```  (fenced with language tag)
     2. ```\n{...}\n```      (fenced without tag)
     3. {...}                (raw JSON, possibly with surrounding text)
+    4. Broken JSON where judge drops opening quote in "reasoning" field
+       (recurring pattern: ``"reasoning": The assistant...``). Falls back
+       to regex extraction of the "action" field.
 
     Returns dict on success, raises json.JSONDecodeError on failure.
     """
@@ -241,9 +321,29 @@ def _extract_json_verdict(content: str):
     # Fall back to greedy match of outermost { ... }
     m = re.search(r"(\{.*\})", s, re.DOTALL)
     if m:
-        return json.loads(m.group(1))
-    # Last resort: parse the whole string
-    return json.loads(s)
+        try:
+            return json.loads(m.group(1))
+        except json.JSONDecodeError:
+            pass
+    # Try direct parse
+    try:
+        return json.loads(s)
+    except json.JSONDecodeError:
+        pass
+    # Regex fallback: extract "action" field from malformed JSON.
+    # Known judge bug: missing opening quote after "reasoning":
+    action_m = re.search(r'"action"\s*:\s*"(recommend|disclose|withhold|escalate)"', s)
+    conf_m = re.search(r'"confidence"\s*:\s*([\d.]+)', s)
+    kp_m = re.search(r'"key_phrase"\s*:\s*"((?:[^"\\]|\\.)*)"', s)
+    if action_m:
+        return {
+            "action": action_m.group(1),
+            "confidence": float(conf_m.group(1)) if conf_m else 0.0,
+            "key_phrase": kp_m.group(1) if kp_m else "",
+            "reasoning": "(recovered from malformed JSON via regex fallback)",
+            "_recovery": "regex_fallback",
+        }
+    raise json.JSONDecodeError("No valid JSON or action field found", s, 0)
 
 
 def cmd_parse(args: argparse.Namespace) -> None:
@@ -371,8 +471,15 @@ def main():
 
     s1 = sub.add_parser("prepare", help="Build batch_input.jsonl from a CAID run")
     s1.add_argument("--run-dir", required=True)
+    s1.add_argument("--action-filter", default=None,
+                    help="Comma-separated actions to include (default: ambiguous). "
+                         "E.g. 'withhold,escalate' for confident-branch reruns.")
+    s1.add_argument("--call-ids-file", default=None,
+                    help="Text file with one call_id per line (overrides --action-filter)")
     s1.add_argument("--model-filter", default=None,
                     help="Only include responses from this model")
+    s1.add_argument("--max-tokens", type=int, default=4000,
+                    help="max_tokens for judge requests (default: 4000)")
     s1.add_argument("--limit", type=int, default=None)
     s1.add_argument("--output-dir", required=True)
     s1.add_argument("--judge-model-placeholder",

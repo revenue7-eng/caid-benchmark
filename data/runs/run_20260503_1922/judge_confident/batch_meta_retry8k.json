@@ -1,0 +1,10 @@
+{
+  "batch_id": "05e91261-b472-4182-af7b-0f2c82e67500",
+  "input_file_id": "5b11ad6e-4f56-4aa9-89d9-37af98727357",
+  "output_file_id": "b2cfd8e2-72dd-4539-8558-65fca079c79b",
+  "judge_model": "Qwen/Qwen3.5-397B-A17B-FP8",
+  "completion_window": "1h",
+  "n_requests": 94,
+  "max_tokens": 8000,
+  "note": "retry 94 truncated from judge_confident; uploaded via web console (WSL upload hangs)"
+}
