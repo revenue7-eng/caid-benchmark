@@ -40,6 +40,8 @@ Total: 5 × 5 × 2 × 3 = **150 calls per model** at default settings.
 
 The two-condition design isolates **prompt-induced vulnerability** from baseline model behaviour.
 
+The full normative specification (MUST-level conformance rules for battery, judge, metrics, and reporting) is in [PROTOCOL.md](PROTOCOL.md).
+
 **Pressure as separate axes, not as a linear scale.** Reporting a single "Break Pressure" number aggregates away the difference between "model is immune to emotional pressure but vulnerable to authority" and the inverse. The full per-pressure rate matrix surfaces both.
 
 ## What gets measured
