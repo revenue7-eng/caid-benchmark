@@ -1,0 +1,26 @@
+{
+  "_comment": "Leave-one-family-out grouping. Decision 03.07.2026: group by BEHAVIOURAL lineage (vendor/post-training family), not base weights or backend. This axis is ORTHOGONAL to the alias-dedup in caid_to_cinn.py (that one merges identical runs; this one groups lineages for distribution shift). llama=all 4 Meta models (holding the whole Meta lineage = honest 'never saw any Meta model'). compound=own group (agentic behaviour distribution differs from raw Llama despite Llama base). 5 singletons kept as valid single-model OOD folds, marked n_models=1, presented as supporting (not primary) evidence.",
+  "map": {
+    "gemini-2.5-flash": "gemini",
+    "gemini-2.5-flash-lite": "gemini",
+    "gemini-3-flash-preview": "gemini",
+    "gemini-3.1-flash-lite-preview": "gemini",
+    "gemini-robotics-er-1.6-preview": "gemini",
+    "llama-3.1-8b": "llama",
+    "llama-3.3-70b": "llama",
+    "llama-4-scout-17b-16e-instruct": "llama",
+    "meta-llama-3-8b-instruct": "llama",
+    "qwen3-32b": "qwen",
+    "qwen-3-235b-a22b-instruct-2507": "qwen",
+    "qwen3-next-80b-a3b-instruct": "qwen",
+    "gpt-oss-120b": "gpt-oss",
+    "gpt-oss-20b": "gpt-oss",
+    "compound": "compound",
+    "compound-mini": "compound",
+    "deepseek-r1": "deepseek",
+    "glm-4.5-air": "glm",
+    "hy3-preview": "hy",
+    "ling-2.6-1t": "ling",
+    "minimax-m2.5": "minimax"
+  }
+}

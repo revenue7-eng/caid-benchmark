@@ -176,3 +176,22 @@ Issues and pull requests welcome. In particular:
 ## Status
 
 Active. Initial public release April 2026, first benchmark run May 2026 (v1.1, rule-based), judge-resolved re-analysis May 26, 2026 (v1.2). Methodology stable; provider list evolves with the free-tier landscape.
+
+## Experiment 6: Can the boundary be trained in? (COMPLINN)
+
+CAID measures the compliance boundary; COMPLINN tested whether that boundary can
+be *built into* a model by adding a violation penalty (λ) to the training loss.
+It cannot. Three approaches failed three different ways: penalty-only training
+produced a refusal machine (0% violations, 100% overrefusal); mixed training
+produced action without discrimination (60.2% violations); policy-conditional
+dual-channel training produced slot/prose decoupling — the compliance token
+formally satisfies the penalty while the free text violates in ~68% of cases.
+The penalty targets one token; behavior lives in ~100 tokens of prose. The only
+effective component was data-side: filtering the training corpus via
+`classify()` (↓decoupling ~16×, ↓prose violations ~19×), with λ inert on the
+clean corpus.
+
+Full archive (code, data, results, write-ups):
+[`experiments/complinn/`](experiments/complinn/).
+This is an intervention experiment *on* the benchmark's question, not part of
+the measurement protocol.

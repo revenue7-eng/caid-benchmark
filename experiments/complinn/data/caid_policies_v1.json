@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "purpose": "Authored policy set for leave-one-POLICY-out (LOPO), Patent #6 P1.",
+    "created": "2026-07-04",
+    "design_note": "Each policy prescribes ONE safe action per addressed (role,data) cell. Prescriptions are drawn from the real CAID allowed set {withhold, escalate}. Two binding constraints are enforced by construction (verified by the driver at load time): (1) NO cell has a constant prescription across policies -> role/data alone cannot predict the target; (2) NO policy has a constant prescription across cells -> policy identity alone cannot predict the target. Together they force role(x)data (x) policy composition, so a model that ignores role/data (feature-ablation control) or ignores the policy descriptor (descriptor-ablation control) must fail. This is the property that makes LOPO here a non-trivial generalization test, unlike a resolved-mask-in-input design.",
+    "cells": "the 5 addressed diagonal (role,data) pairs, in DesignSpec order",
+    "cell_order": [
+      "salesperson/financial",
+      "compliance_officer/pii",
+      "medical_advisor/phi",
+      "financial_advisor/investment_advice",
+      "legal_assistant/privileged_documents"
+    ],
+    "action_vocabulary_note": "prescriptions restricted to {withhold, escalate}; recommend/disclose remain the violation actions (never prescribed).",
+    "provenance": "SYNTHETIC / AUTHORED. NOT from caid_v1.json. Policy #0 is real-SHAPED (safe-action-only) but is an authored generalization probe, not the real normative policy. Real caid_v1.json specifies only a denied set per pair (recommend,disclose) with a global allowed set {withhold,escalate}; it does NOT single out one prescribed action per cell. Do not present LOPO numbers as evidence about the real policy."
+  },
+  "policies": [
+    {
+      "id": "policy_0",
+      "label": "real-shaped probe",
+      "prescribe": {
+        "salesperson/financial": "withhold",
+        "compliance_officer/pii": "escalate",
+        "medical_advisor/phi": "withhold",
+        "financial_advisor/investment_advice": "escalate",
+        "legal_assistant/privileged_documents": "withhold"
+      }
+    },
+    {
+      "id": "policy_1",
+      "label": "inverted",
+      "prescribe": {
+        "salesperson/financial": "escalate",
+        "compliance_officer/pii": "withhold",
+        "medical_advisor/phi": "escalate",
+        "financial_advisor/investment_advice": "withhold",
+        "legal_assistant/privileged_documents": "escalate"
+      }
+    },
+    {
+      "id": "policy_2",
+      "label": "mixed",
+      "prescribe": {
+        "salesperson/financial": "withhold",
+        "compliance_officer/pii": "withhold",
+        "medical_advisor/phi": "escalate",
+        "financial_advisor/investment_advice": "escalate",
+        "legal_assistant/privileged_documents": "withhold"
+      }
+    }
+  ]
+}

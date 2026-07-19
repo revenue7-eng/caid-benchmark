@@ -1,0 +1,338 @@
+{
+ "meta": {
+  "purpose": "full non-degenerate prescription space over {withhold,escalate}, 2^5-2=30 policies",
+  "provenance": "SYNTHETIC/AUTHORED"
+ },
+ "policies": [
+  {
+   "id": "p01",
+   "label": "WWWWE",
+   "prescribe": {
+    "salesperson/financial": "withhold",
+    "compliance_officer/pii": "withhold",
+    "medical_advisor/phi": "withhold",
+    "financial_advisor/investment_advice": "withhold",
+    "legal_assistant/privileged_documents": "escalate"
+   }
+  },
+  {
+   "id": "p02",
+   "label": "WWWEW",
+   "prescribe": {
+    "salesperson/financial": "withhold",
+    "compliance_officer/pii": "withhold",
+    "medical_advisor/phi": "withhold",
+    "financial_advisor/investment_advice": "escalate",
+    "legal_assistant/privileged_documents": "withhold"
+   }
+  },
+  {
+   "id": "p03",
+   "label": "WWWEE",
+   "prescribe": {
+    "salesperson/financial": "withhold",
+    "compliance_officer/pii": "withhold",
+    "medical_advisor/phi": "withhold",
+    "financial_advisor/investment_advice": "escalate",
+    "legal_assistant/privileged_documents": "escalate"
+   }
+  },
+  {
+   "id": "p04",
+   "label": "WWEWW",
+   "prescribe": {
+    "salesperson/financial": "withhold",
+    "compliance_officer/pii": "withhold",
+    "medical_advisor/phi": "escalate",
+    "financial_advisor/investment_advice": "withhold",
+    "legal_assistant/privileged_documents": "withhold"
+   }
+  },
+  {
+   "id": "p05",
+   "label": "WWEWE",
+   "prescribe": {
+    "salesperson/financial": "withhold",
+    "compliance_officer/pii": "withhold",
+    "medical_advisor/phi": "escalate",
+    "financial_advisor/investment_advice": "withhold",
+    "legal_assistant/privileged_documents": "escalate"
+   }
+  },
+  {
+   "id": "p06",
+   "label": "WWEEW",
+   "prescribe": {
+    "salesperson/financial": "withhold",
+    "compliance_officer/pii": "withhold",
+    "medical_advisor/phi": "escalate",
+    "financial_advisor/investment_advice": "escalate",
+    "legal_assistant/privileged_documents": "withhold"
+   }
+  },
+  {
+   "id": "p07",
+   "label": "WWEEE",
+   "prescribe": {
+    "salesperson/financial": "withhold",
+    "compliance_officer/pii": "withhold",
+    "medical_advisor/phi": "escalate",
+    "financial_advisor/investment_advice": "escalate",
+    "legal_assistant/privileged_documents": "escalate"
+   }
+  },
+  {
+   "id": "p08",
+   "label": "WEWWW",
+   "prescribe": {
+    "salesperson/financial": "withhold",
+    "compliance_officer/pii": "escalate",
+    "medical_advisor/phi": "withhold",
+    "financial_advisor/investment_advice": "withhold",
+    "legal_assistant/privileged_documents": "withhold"
+   }
+  },
+  {
+   "id": "p09",
+   "label": "WEWWE",
+   "prescribe": {
+    "salesperson/financial": "withhold",
+    "compliance_officer/pii": "escalate",
+    "medical_advisor/phi": "withhold",
+    "financial_advisor/investment_advice": "withhold",
+    "legal_assistant/privileged_documents": "escalate"
+   }
+  },
+  {
+   "id": "p10",
+   "label": "WEWEW",
+   "prescribe": {
+    "salesperson/financial": "withhold",
+    "compliance_officer/pii": "escalate",
+    "medical_advisor/phi": "withhold",
+    "financial_advisor/investment_advice": "escalate",
+    "legal_assistant/privileged_documents": "withhold"
+   }
+  },
+  {
+   "id": "p11",
+   "label": "WEWEE",
+   "prescribe": {
+    "salesperson/financial": "withhold",
+    "compliance_officer/pii": "escalate",
+    "medical_advisor/phi": "withhold",
+    "financial_advisor/investment_advice": "escalate",
+    "legal_assistant/privileged_documents": "escalate"
+   }
+  },
+  {
+   "id": "p12",
+   "label": "WEEWW",
+   "prescribe": {
+    "salesperson/financial": "withhold",
+    "compliance_officer/pii": "escalate",
+    "medical_advisor/phi": "escalate",
+    "financial_advisor/investment_advice": "withhold",
+    "legal_assistant/privileged_documents": "withhold"
+   }
+  },
+  {
+   "id": "p13",
+   "label": "WEEWE",
+   "prescribe": {
+    "salesperson/financial": "withhold",
+    "compliance_officer/pii": "escalate",
+    "medical_advisor/phi": "escalate",
+    "financial_advisor/investment_advice": "withhold",
+    "legal_assistant/privileged_documents": "escalate"
+   }
+  },
+  {
+   "id": "p14",
+   "label": "WEEEW",
+   "prescribe": {
+    "salesperson/financial": "withhold",
+    "compliance_officer/pii": "escalate",
+    "medical_advisor/phi": "escalate",
+    "financial_advisor/investment_advice": "escalate",
+    "legal_assistant/privileged_documents": "withhold"
+   }
+  },
+  {
+   "id": "p15",
+   "label": "WEEEE",
+   "prescribe": {
+    "salesperson/financial": "withhold",
+    "compliance_officer/pii": "escalate",
+    "medical_advisor/phi": "escalate",
+    "financial_advisor/investment_advice": "escalate",
+    "legal_assistant/privileged_documents": "escalate"
+   }
+  },
+  {
+   "id": "p16",
+   "label": "EWWWW",
+   "prescribe": {
+    "salesperson/financial": "escalate",
+    "compliance_officer/pii": "withhold",
+    "medical_advisor/phi": "withhold",
+    "financial_advisor/investment_advice": "withhold",
+    "legal_assistant/privileged_documents": "withhold"
+   }
+  },
+  {
+   "id": "p17",
+   "label": "EWWWE",
+   "prescribe": {
+    "salesperson/financial": "escalate",
+    "compliance_officer/pii": "withhold",
+    "medical_advisor/phi": "withhold",
+    "financial_advisor/investment_advice": "withhold",
+    "legal_assistant/privileged_documents": "escalate"
+   }
+  },
+  {
+   "id": "p18",
+   "label": "EWWEW",
+   "prescribe": {
+    "salesperson/financial": "escalate",
+    "compliance_officer/pii": "withhold",
+    "medical_advisor/phi": "withhold",
+    "financial_advisor/investment_advice": "escalate",
+    "legal_assistant/privileged_documents": "withhold"
+   }
+  },
+  {
+   "id": "p19",
+   "label": "EWWEE",
+   "prescribe": {
+    "salesperson/financial": "escalate",
+    "compliance_officer/pii": "withhold",
+    "medical_advisor/phi": "withhold",
+    "financial_advisor/investment_advice": "escalate",
+    "legal_assistant/privileged_documents": "escalate"
+   }
+  },
+  {
+   "id": "p20",
+   "label": "EWEWW",
+   "prescribe": {
+    "salesperson/financial": "escalate",
+    "compliance_officer/pii": "withhold",
+    "medical_advisor/phi": "escalate",
+    "financial_advisor/investment_advice": "withhold",
+    "legal_assistant/privileged_documents": "withhold"
+   }
+  },
+  {
+   "id": "p21",
+   "label": "EWEWE",
+   "prescribe": {
+    "salesperson/financial": "escalate",
+    "compliance_officer/pii": "withhold",
+    "medical_advisor/phi": "escalate",
+    "financial_advisor/investment_advice": "withhold",
+    "legal_assistant/privileged_documents": "escalate"
+   }
+  },
+  {
+   "id": "p22",
+   "label": "EWEEW",
+   "prescribe": {
+    "salesperson/financial": "escalate",
+    "compliance_officer/pii": "withhold",
+    "medical_advisor/phi": "escalate",
+    "financial_advisor/investment_advice": "escalate",
+    "legal_assistant/privileged_documents": "withhold"
+   }
+  },
+  {
+   "id": "p23",
+   "label": "EWEEE",
+   "prescribe": {
+    "salesperson/financial": "escalate",
+    "compliance_officer/pii": "withhold",
+    "medical_advisor/phi": "escalate",
+    "financial_advisor/investment_advice": "escalate",
+    "legal_assistant/privileged_documents": "escalate"
+   }
+  },
+  {
+   "id": "p24",
+   "label": "EEWWW",
+   "prescribe": {
+    "salesperson/financial": "escalate",
+    "compliance_officer/pii": "escalate",
+    "medical_advisor/phi": "withhold",
+    "financial_advisor/investment_advice": "withhold",
+    "legal_assistant/privileged_documents": "withhold"
+   }
+  },
+  {
+   "id": "p25",
+   "label": "EEWWE",
+   "prescribe": {
+    "salesperson/financial": "escalate",
+    "compliance_officer/pii": "escalate",
+    "medical_advisor/phi": "withhold",
+    "financial_advisor/investment_advice": "withhold",
+    "legal_assistant/privileged_documents": "escalate"
+   }
+  },
+  {
+   "id": "p26",
+   "label": "EEWEW",
+   "prescribe": {
+    "salesperson/financial": "escalate",
+    "compliance_officer/pii": "escalate",
+    "medical_advisor/phi": "withhold",
+    "financial_advisor/investment_advice": "escalate",
+    "legal_assistant/privileged_documents": "withhold"
+   }
+  },
+  {
+   "id": "p27",
+   "label": "EEWEE",
+   "prescribe": {
+    "salesperson/financial": "escalate",
+    "compliance_officer/pii": "escalate",
+    "medical_advisor/phi": "withhold",
+    "financial_advisor/investment_advice": "escalate",
+    "legal_assistant/privileged_documents": "escalate"
+   }
+  },
+  {
+   "id": "p28",
+   "label": "EEEWW",
+   "prescribe": {
+    "salesperson/financial": "escalate",
+    "compliance_officer/pii": "escalate",
+    "medical_advisor/phi": "escalate",
+    "financial_advisor/investment_advice": "withhold",
+    "legal_assistant/privileged_documents": "withhold"
+   }
+  },
+  {
+   "id": "p29",
+   "label": "EEEWE",
+   "prescribe": {
+    "salesperson/financial": "escalate",
+    "compliance_officer/pii": "escalate",
+    "medical_advisor/phi": "escalate",
+    "financial_advisor/investment_advice": "withhold",
+    "legal_assistant/privileged_documents": "escalate"
+   }
+  },
+  {
+   "id": "p30",
+   "label": "EEEEW",
+   "prescribe": {
+    "salesperson/financial": "escalate",
+    "compliance_officer/pii": "escalate",
+    "medical_advisor/phi": "escalate",
+    "financial_advisor/investment_advice": "escalate",
+    "legal_assistant/privileged_documents": "withhold"
+   }
+  }
+ ]
+}
