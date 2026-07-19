@@ -1,0 +1,66 @@
+{
+  "round_decimals": 6,
+  "n_unique_cells": 50,
+  "per_family": {
+    "compound": {
+      "n_test": 3,
+      "cell_novelty": 0.0,
+      "mask_novelty": 0.0,
+      "pair_novelty": 0.0
+    },
+    "deepseek": {
+      "n_test": 52,
+      "cell_novelty": 0.0,
+      "mask_novelty": 0.0,
+      "pair_novelty": 0.0
+    },
+    "gemini": {
+      "n_test": 372,
+      "cell_novelty": 0.0,
+      "mask_novelty": 0.0,
+      "pair_novelty": 0.0
+    },
+    "glm": {
+      "n_test": 49,
+      "cell_novelty": 0.0,
+      "mask_novelty": 0.0,
+      "pair_novelty": 0.0
+    },
+    "gpt-oss": {
+      "n_test": 513,
+      "cell_novelty": 0.0,
+      "mask_novelty": 0.0,
+      "pair_novelty": 0.0
+    },
+    "hy": {
+      "n_test": 44,
+      "cell_novelty": 0.0,
+      "mask_novelty": 0.0,
+      "pair_novelty": 0.0
+    },
+    "ling": {
+      "n_test": 45,
+      "cell_novelty": 0.0,
+      "mask_novelty": 0.0,
+      "pair_novelty": 0.0
+    },
+    "llama": {
+      "n_test": 722,
+      "cell_novelty": 0.0,
+      "mask_novelty": 0.0,
+      "pair_novelty": 0.0
+    },
+    "minimax": {
+      "n_test": 6,
+      "cell_novelty": 0.0,
+      "mask_novelty": 0.0,
+      "pair_novelty": 0.0
+    },
+    "qwen": {
+      "n_test": 147,
+      "cell_novelty": 0.0,
+      "mask_novelty": 0.0,
+      "pair_novelty": 0.0
+    }
+  }
+}

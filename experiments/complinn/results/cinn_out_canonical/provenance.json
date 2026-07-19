@@ -1,0 +1,119 @@
+{
+  "source_file": "D:\\caid\\caid-benchmark\\data\\runs\\run_20260503_1922\\classifications_final.jsonl",
+  "source_sha256": "fdd9bf9b68fb11dad2b2008bf8de012214f687d7e944cc322bc7c9769c49e13c",
+  "prompts_file": "D:\\caid\\caid-benchmark\\prompts\\caid_v1.json",
+  "prompts_sha256": "3b35fc732ec409782faeb5b5fd6250333149ce335026d278eb39c6313d6eced5",
+  "config": {
+    "role_collapse": null,
+    "pressure_encoding": "thermometer",
+    "label_scheme": "actions4",
+    "provenance_filter": "all",
+    "ood_axis": "model",
+    "ood_held_out": [
+      "gemini*"
+    ],
+    "seed": 20260703
+  },
+  "design": {
+    "roles": [
+      "salesperson",
+      "compliance_officer",
+      "medical_advisor",
+      "financial_advisor",
+      "legal_assistant"
+    ],
+    "data_classes": [
+      "financial",
+      "pii",
+      "phi",
+      "investment_advice",
+      "privileged_documents"
+    ],
+    "actions": [
+      "recommend",
+      "disclose",
+      "withhold",
+      "escalate"
+    ],
+    "pressure_levels": 5,
+    "conditions": [
+      "vendor",
+      "none"
+    ]
+  },
+  "field_map": {
+    "model": "model",
+    "provider": "provider",
+    "combo_id": "combo_id",
+    "role": "role",
+    "data": "data",
+    "domain": "domain",
+    "pressure": "pressure",
+    "condition": "condition",
+    "replicate": "replicate",
+    "label": "action",
+    "provenance": "source",
+    "confidence": "confidence",
+    "violation": "violation"
+  },
+  "n_input_records": 2176,
+  "n_encoded": 1953,
+  "n_dropped": {
+    "ambiguous_unresolved:ambiguous_empty_response": 146,
+    "ambiguous_unresolved:ambiguous_judge_failed": 77
+  },
+  "value_remaps": {
+    "provenance: rule_based -> original": 1113,
+    "provenance: llm_judge -> judge_resolved": 840
+  },
+  "label_balance": {
+    "escalate": 193,
+    "recommend": 910,
+    "disclose": 225,
+    "withhold": 625
+  },
+  "models": [
+    "compound",
+    "compound-mini",
+    "deepseek-r1",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+    "gemini-3-flash-preview",
+    "gemini-3.1-flash-lite-preview",
+    "gemini-robotics-er-1.6-preview",
+    "glm-4.5-air",
+    "gpt-oss-120b",
+    "gpt-oss-20b",
+    "hy3-preview",
+    "ling-2.6-1t",
+    "llama-3.1-8b",
+    "llama-3.3-70b",
+    "llama-4-scout-17b-16e-instruct",
+    "meta-llama-3-8b-instruct",
+    "minimax-m2.5",
+    "qwen-3-235b-a22b-instruct-2507",
+    "qwen3-32b",
+    "qwen3-next-80b-a3b-instruct"
+  ],
+  "provenance_balance": {
+    "original": 1113,
+    "judge_resolved": 840
+  },
+  "ood": {
+    "axis": "model",
+    "held_out": [
+      "gemini*"
+    ],
+    "n_train": 1581,
+    "n_test": 372
+  },
+  "policy_tensor": {
+    "shape": [
+      5,
+      5,
+      4
+    ],
+    "allowed_paths": 50,
+    "sparsity": 0.5
+  }
+}
