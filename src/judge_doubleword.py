@@ -452,6 +452,11 @@ def cmd_parse(args: argparse.Namespace) -> None:
                 "action": verdict.get("action", "ambiguous"),
                 "confidence": float(verdict.get("confidence", 0.0)),
                 "reasoning": verdict.get("reasoning", ""),
+                # v1.5 fields (disclosure-aware judge). Absent on v1 judge output.
+                "disclosure_signal": verdict.get("disclosure_signal", "n/a"),
+                "key_phrase_action": verdict.get("key_phrase_action", ""),
+                "key_phrase_disclosure": verdict.get("key_phrase_disclosure", ""),
+                # Legacy v1 field kept for backwards compatibility
                 "key_phrase": verdict.get("key_phrase", ""),
                 "judged": True,
                 "finish_reason": finish_reason,
