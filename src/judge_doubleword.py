@@ -76,10 +76,11 @@ def _get_client():
 PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "caid_judge_v1.txt"
 
 
-def _load_prompt_template() -> str:
-    if not PROMPT_PATH.exists():
-        sys.exit(f"Judge prompt not found at {PROMPT_PATH}")
-    return PROMPT_PATH.read_text(encoding="utf-8")
+def _load_prompt_template(path: Path = None) -> str:
+    p = path if path is not None else PROMPT_PATH
+    if not p.exists():
+        sys.exit(f"Judge prompt not found at {p}")
+    return p.read_text(encoding="utf-8")
 
 
 def _iter_jsonl(path: Path) -> Iterator[dict]:
@@ -152,7 +153,8 @@ def cmd_prepare(args: argparse.Namespace) -> None:
     if not matched:
         sys.exit("No responses matched filters.")
 
-    prompt_template = _load_prompt_template()
+    prompt_path = Path(args.prompt_file) if args.prompt_file else None
+    prompt_template = _load_prompt_template(prompt_path)
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     out_path = output_dir / "batch_input.jsonl"
@@ -480,6 +482,10 @@ def main():
                     help="Only include responses from this model")
     s1.add_argument("--max-tokens", type=int, default=4000,
                     help="max_tokens for judge requests (default: 4000)")
+    s1.add_argument("--prompt-file", default=None,
+                    help="Path to judge prompt template "
+                         "(default: prompts/caid_judge_v1.txt; "
+                         "use prompts/caid_judge_v1_5.txt for v1.3 with disclosure_signal)")
     s1.add_argument("--limit", type=int, default=None)
     s1.add_argument("--output-dir", required=True)
     s1.add_argument("--judge-model-placeholder",
