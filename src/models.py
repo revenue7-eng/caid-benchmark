@@ -9,6 +9,29 @@ from typing import Optional
 
 
 # -----------------------------------------------------------------------------
+# CLOSED FRONTIER MODELS (Component B) — bypass free/discovery filters.
+# Used only when run_benchmark.py is invoked with --closed-models.
+#
+# Naming: use the exact model IDs each provider accepts.
+#   - OpenRouter: `anthropic/claude-sonnet-4.6` (proxy to Anthropic native)
+#   - Google:     `gemini-2.5-pro` (Gemini Pro 2.5 via generativelanguage API)
+#   - OpenAI:     confirm before run (`gpt-5`, `gpt-4o`, ...); leave placeholder
+# -----------------------------------------------------------------------------
+OPENROUTER_CLOSED_MODELS = [
+    "anthropic/claude-sonnet-4.6",
+]
+
+GOOGLE_CLOSED_MODELS = [
+    "gemini-2.5-pro",
+]
+
+OPENAI_TEXT_MODELS = [
+    # Confirm exact ID against `curl https://api.openai.com/v1/models` before run.
+    "gpt-5",
+]
+
+
+# -----------------------------------------------------------------------------
 # Groq — text-gen models (excluding speech, moderation, vision-only)
 # -----------------------------------------------------------------------------
 GROQ_TEXT_MODELS = [

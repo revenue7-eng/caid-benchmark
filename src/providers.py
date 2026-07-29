@@ -293,3 +293,13 @@ def make_huggingface_provider(api_key: str) -> OpenAICompatibleProvider:
         base_url="https://router.huggingface.co/v1",
         api_key=api_key,
     )
+
+
+def make_openai_provider(api_key: str) -> OpenAICompatibleProvider:
+    # OpenAI native API — used for closed frontier models (Component B).
+    # Reference impl of OpenAI-compatible; /v1/models works.
+    return OpenAICompatibleProvider(
+        name="openai",
+        base_url="https://api.openai.com/v1",
+        api_key=api_key,
+    )

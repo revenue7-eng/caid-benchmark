@@ -29,11 +29,12 @@ sys.path.insert(0, os.path.dirname(__file__))
 from providers import (
     make_groq_provider, make_openrouter_provider, make_google_provider,
     make_cerebras_provider, make_sambanova_provider, make_mistral_provider,
-    make_huggingface_provider,
+    make_huggingface_provider, make_openai_provider,
 )
 from models import (
     GROQ_TEXT_MODELS, CEREBRAS_TEXT_MODELS, SAMBANOVA_TEXT_MODELS,
     MISTRAL_TEXT_MODELS, HUGGINGFACE_TEXT_MODELS,
+    OPENAI_TEXT_MODELS, OPENROUTER_CLOSED_MODELS, GOOGLE_CLOSED_MODELS,
     filter_groq_text, filter_openrouter_free_text, filter_cerebras_text,
     filter_mistral_text, filter_google_gemini,
 )
@@ -247,8 +248,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--provider",
                         choices=["groq", "openrouter", "google", "cerebras",
-                                 "sambanova", "mistral", "huggingface"])
+                                 "sambanova", "mistral", "huggingface", "openai"])
     parser.add_argument("--all", action="store_true")
+    parser.add_argument("--closed-models", action="store_true",
+                        help="Component B: run closed frontier models only "
+                             "(Sonnet 4.6 via OpenRouter, Gemini Pro 2.5, GPT-5/4o). "
+                             "Overrides discovery filters for openrouter/google/openai; "
+                             "other providers are skipped.")
     parser.add_argument("--conditions", default="vendor,none")
     parser.add_argument("--n", type=int, default=10, help="Replicates per unique prompt")
     parser.add_argument("--models", default=None, help="Comma-separated model IDs filter")
@@ -336,10 +342,22 @@ def main():
             providers_to_run.append(("huggingface", make_huggingface_provider(key)))
         elif args.provider == "huggingface":
             print("[warn] HF_TOKEN not set, skipping HuggingFace")
+    if args.all or args.provider == "openai" or args.closed_models:
+        key = os.environ.get("OPENAI_API_KEY")
+        if key:
+            providers_to_run.append(("openai", make_openai_provider(key)))
+        elif args.provider == "openai" or args.closed_models:
+            print("[warn] OPENAI_API_KEY not set, skipping OpenAI")
+
+    # Component B: closed frontier models only. Restrict providers to those with
+    # a closed-model whitelist (openrouter, google, openai) and drop the rest.
+    if args.closed_models:
+        closed_names = {"openrouter", "google", "openai"}
+        providers_to_run = [(n, p) for n, p in providers_to_run if n in closed_names]
 
     if not providers_to_run:
         print("No providers available. Set at least one API key:")
-        print("  GROQ_API_KEY, OPENROUTER_API_KEY, GOOGLE_API_KEY,")
+        print("  GROQ_API_KEY, OPENROUTER_API_KEY, GOOGLE_API_KEY, OPENAI_API_KEY,")
         print("  CEREBRAS_API_KEY, SAMBANOVA_API_KEY, MISTRAL_API_KEY, HF_TOKEN")
         sys.exit(1)
 
@@ -368,7 +386,15 @@ def main():
             raw_models = provider.list_models()
             print(f"  API returned {len(raw_models)} models")
 
-            if provider_name == "groq":
+            if args.closed_models and provider_name == "openrouter":
+                # Bypass free-only filter; Sonnet 4.6 is paid on OpenRouter.
+                model_ids = list(OPENROUTER_CLOSED_MODELS)
+            elif args.closed_models and provider_name == "google":
+                # Bypass generic gemini filter; pin to Pro 2.5 for Component B.
+                model_ids = list(GOOGLE_CLOSED_MODELS)
+            elif args.closed_models and provider_name == "openai":
+                model_ids = list(OPENAI_TEXT_MODELS)
+            elif provider_name == "groq":
                 model_ids = filter_groq_text(raw_models)
             elif provider_name == "openrouter":
                 model_ids = filter_openrouter_free_text(raw_models)
@@ -385,6 +411,9 @@ def main():
                 # HF router /v1/models often returns thousands of models;
                 # use our whitelist of stable text-gen models
                 model_ids = list(HUGGINGFACE_TEXT_MODELS)
+            elif provider_name == "openai":
+                # /v1/models returns many; pin to whitelist for reproducibility
+                model_ids = list(OPENAI_TEXT_MODELS)
             else:
                 model_ids = [m["id"] for m in raw_models]
 
