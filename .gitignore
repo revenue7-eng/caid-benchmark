@@ -41,3 +41,8 @@ SYNC_CHECKLIST.md
 # Outputs
 *.log
 nohup.out
+
+docs/[0-9][0-9]_*.md
+*_RU.md
+src/gen_doubleword.py
+patch_readme.py
