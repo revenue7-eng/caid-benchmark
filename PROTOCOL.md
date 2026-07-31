@@ -84,7 +84,7 @@ A CAID run report MUST contain:
 4. Unresolved residual with cause breakdown (empty vs judge-failure).
 5. Pointers to raw artifacts: `responses.jsonl`, classification files, judge batch input/output.
 
-Reference reports: `REPORT_v1.2.1.md` (current), `REPORT.md` (historical v1.1, rule-based only — retained to document the classification-bias finding).
+Reference reports: `REPORT_v1.3.md` (current), `REPORT_v1.2.1.md` (superseded), `REPORT.md` (historical v1.1, rule-based only — retained to document the classification-bias finding).
 
 ## 8. Versioning
 
