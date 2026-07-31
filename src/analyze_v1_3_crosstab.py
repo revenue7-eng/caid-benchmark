@@ -61,7 +61,7 @@ def _rate(cell):
     return vr, nr, vr - nr, cell["vendor"]["t"] + cell["none"]["t"]
 
 
-def load_open():
+def load_open(judged_path=OPEN_JUDGED):
     """Return per-model v1.3 cells + pooled disclosure stats for the open baseline."""
     meta = {}
     for path in OPEN_ORIGINALS:
@@ -76,7 +76,7 @@ def load_open():
     cells = defaultdict(_cell)
     disc = defaultdict(lambda: {"rec": 0, "disclosed": 0})
     unmatched = 0
-    with open(OPEN_JUDGED) as f:
+    with open(judged_path) as f:
         for line in f:
             j = json.loads(line)
             m = meta.get(j["call_id"])
@@ -123,10 +123,13 @@ def load_closed(rule_path, judge_path):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--no-csv", action="store_true")
+    ap.add_argument("--judged", default=str(OPEN_JUDGED),
+                    help="open-baseline judged jsonl (default: v1.5 rejudge; "
+                         "pass the merged v1.6 file to recompute the fixed headline)")
     ap.add_argument("--csv-out", default="data/runs/run_20260503_1922/judge_v1_5_rejudge/v1_3_crosstab.csv")
     args = ap.parse_args()
 
-    open_cells, open_disc, unmatched = load_open()
+    open_cells, open_disc, unmatched = load_open(args.judged)
     closed = {name: load_closed(*paths) for name, paths in CLOSED.items()}
 
     rows = []

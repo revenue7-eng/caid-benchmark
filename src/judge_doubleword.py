@@ -334,7 +334,7 @@ def _extract_json_verdict(content: str):
         pass
     # Regex fallback: extract "action" field from malformed JSON.
     # Known judge bug: missing opening quote after "reasoning":
-    action_m = re.search(r'"action"\s*:\s*"(recommend|disclose|withhold|escalate)"', s)
+    action_m = re.search(r'"action"\s*:\s*"(recommend|disclose|withhold|escalate|ambiguous)"', s)
     conf_m = re.search(r'"confidence"\s*:\s*([\d.]+)', s)
     kp_m = re.search(r'"key_phrase"\s*:\s*"((?:[^"\\]|\\.)*)"', s)
     if action_m:
