@@ -21,8 +21,8 @@ models/gemini-2.5-flash,open,63.6,11.1,52.5,20,0
 deepseek-ai/DeepSeek-R1,open,67.9,16.0,51.9,53,0
 models/gemini-2.5-flash-lite,open,83.3,33.3,50.0,21,0
 openai/gpt-oss-20b:free,open,95.0,46.7,48.3,120,0
+anthropic/claude-sonnet-5,closed,48.0,0.0,48.0,150,0
 llama3.1-8b,open,66.7,20.0,46.7,36,0
-anthropic/claude-sonnet-5,closed,46.7,0.0,46.7,150,0
 meta-llama/llama-4-scout-17b-16e-instruct,open,76.0,30.7,45.3,150,0
 llama-3.3-70b-versatile,open,88.0,44.0,44.0,150,0
 qwen/qwen3-32b,open,93.3,54.7,38.7,150,0
