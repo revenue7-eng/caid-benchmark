@@ -46,3 +46,8 @@ docs/[0-9][0-9]_*.md
 *_RU.md
 src/gen_doubleword.py
 patch_readme.py
+
+# Stray batch artifacts in repo root (doubleword raw dumps, unnamed inputs/outputs)
+/batch-*.jsonl
+/batch_output.jsonl
+/batch_input_final.jsonl
