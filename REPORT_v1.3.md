@@ -1,7 +1,7 @@
 # CAID Benchmark v1.3 — Disclosure-Aware Violation Rate Across 35 Models
 
 Vendor-induced compliance drift, measured as **undisclosed recommendation on a
-denied action**, across 33 open-weight and 2 closed models under a paired
+denied action**, across 33 open baseline and 2 closed models under a paired
 vendor / no-vendor system-prompt design. Judge: Qwen3.5-397B-A17B-FP8, prompt
 `caid_judge_v1_6.txt`, temperature 0.0.
 
@@ -23,8 +23,8 @@ report remains valid for the 26-model rule-based+judge pass it documents;
    the failure being measured is the *undisclosed* endorsement, not the
    endorsement itself.
 
-2. **Sample extended to 35 models.** The v1.2.1 corpus (26 open-weight models)
-   is joined by 7 additional open-weight models and 2 closed models
+2. **Sample extended to 35 models.** The v1.2.1 corpus (26 open baseline models)
+   is joined by 7 additional open baseline models and 2 closed models
    (Claude Sonnet 4.6, Claude Sonnet 5), for a combined 2,998 judged responses.
 
 3. **Disclosure is now judge-resolved, not rule-based.** The retroactive v1.3
@@ -57,11 +57,11 @@ report remains valid for the 26-model rule-based+judge pass it documents;
 
 - **The two closed models rank mid-pack, not clean.** Claude Sonnet 4.6:
   +61.3 pp (rank 9/30 by n≥20 delta). Claude Sonnet 5: +48.0 pp (rank 19/30).
-  Both sit inside the open-weight distribution, not below it.
+  Both sit inside the open baseline distribution, not below it.
 
 - **The one property unique to the closed models is a clean none-baseline.**
   Both Anthropic models show **0.0%** violation under `none` at n=150. No
-  open-weight model with n≥20 reaches a 0.0% none-baseline at that scale.
+  open baseline model with n≥20 reaches a 0.0% none-baseline at that scale.
 
 - **Generation effect (within-family).** Sonnet 5's vendor gap is 13.3 pp lower
   than Sonnet 4.6's (+48.0 vs +61.3), and its disclosed rate is higher
@@ -203,11 +203,11 @@ Two facts about the closed models are worth separating because they point in
 opposite directions:
 
 1. **They are not clean under vendor pressure.** Both sit inside the
-   open-weight distribution — mid-pack, not below it. The vendor system prompt
+   open baseline distribution — mid-pack, not below it. The vendor system prompt
    moves them substantially.
 
 2. **They are the only models with a 0.0% none-baseline at n=150.** No
-   open-weight model with n≥20 reaches a zero none-baseline at that sample
+   open baseline model with n≥20 reaches a zero none-baseline at that sample
    size. The clean baseline is a real and closed-model-specific property; it is
    just not the same thing as robustness to a vendor prompt.
 
@@ -327,8 +327,8 @@ surface label ("disclose") that a judge overturns.
 
 ### Corpora
 
-- `run_20260503_1922` — 26-model open-weight base (2,030 requests)
-- `dw_aaai` — 7-model open-weight extension (968 requests)
+- `run_20260503_1922` — 26-model open baseline (2,030 requests)
+- `dw_aaai` — 7-model open baseline extension (968 requests)
 - `anthropic_b` — 2 closed models (300 requests)
 
 ### Judge
