@@ -1,7 +1,7 @@
-# CAID Benchmark v1.3 — Disclosure-Aware Violation Rate Across 35 Models
+# CAID Benchmark v1.3 — Disclosure-Aware Violation Rate Across 34 Models
 
 Vendor-induced compliance drift, measured as **undisclosed recommendation on a
-denied action**, across 33 open-weight and 2 closed models under a paired
+denied action**, across 27 open-weight and 7 closed models under a paired
 vendor / no-vendor system-prompt design. Judge: Qwen3.5-397B-A17B-FP8, prompt
 `caid_judge_v1_6.txt`, temperature 0.0.
 
@@ -23,9 +23,12 @@ report remains valid for the 26-model rule-based+judge pass it documents;
    the failure being measured is the *undisclosed* endorsement, not the
    endorsement itself.
 
-2. **Sample extended to 35 models.** The v1.2.1 corpus (26 open-weight models)
-   is joined by 7 additional open-weight models and 2 closed models
-   (Claude Sonnet 4.6, Claude Sonnet 5), for a combined 2,998 judged responses.
+2. **Sample extended to 34 models.** The v1.2.1 corpus (26 models - 20
+   open-weight plus 6 closed Google Gemini API models) is joined by 7 additional
+   open-weight models and 2 closed Anthropic models (Claude Sonnet 4.6, Claude
+   Sonnet 5). One Gemini variant (robotics-er) is an embodied-reasoning model
+   outside the advisory domain and is excluded by inclusion criterion, leaving
+   34 models - 27 open-weight and 7 closed - across 2,998 judged responses.
 
 3. **Disclosure is now judge-resolved, not rule-based.** The retroactive v1.3
    policy pass (`POLICY_V1_3_APPLIED.md`) applied a rule-based disclosure
@@ -47,7 +50,7 @@ report remains valid for the 26-model rule-based+judge pass it documents;
 ## TL;DR
 
 - **The vendor effect is universal and large.** Median vendor-minus-none gap
-  across all 35 models: **+53.3 pp** (n≥20 subset: **+52.2 pp**). Every model
+  across all 34 models: **+52.9 pp** (n≥20 subset: **+51.9 pp**). Every model
   with n≥20 shows a positive gap.
 
 - **A vendor system prompt is the dominant driver of undisclosed
@@ -56,12 +59,16 @@ report remains valid for the 26-model rule-based+judge pass it documents;
   actions becomes the modal behaviour for the majority of models.
 
 - **The two closed models rank mid-pack, not clean.** Claude Sonnet 4.6:
-  +61.3 pp (rank 9/30 by n≥20 delta). Claude Sonnet 5: +48.0 pp (rank 19/30).
+  +61.3 pp (rank 8/29 by n≥20 delta). Claude Sonnet 5: +48.0 pp (rank 18/29).
   Both sit inside the open-weight distribution, not below it.
 
-- **The one property unique to the closed models is a clean none-baseline.**
-  Both Anthropic models show **0.0%** violation under `none` at n=150. No
-  open-weight model with n≥20 reaches a 0.0% none-baseline at that scale.
+- **A clean none-baseline is scale-sensitive, not a closed-model property.**
+  Both Anthropic models show **0.0%** violation under `none` at n=150; no
+  open-weight model reaches 0.0% at n=150 (nearest: Nemotron-3-Super, 2.7%).
+  Several open-weight models do reach a 0.0% none-baseline at smaller n
+  (largest: Kimi-K2.6, n=141). The other closed models (Gemini) do not have
+  clean baselines (17-33% none), so a zero baseline is neither unique to closed
+  models nor uniform within them.
 
 - **Generation effect (within-family).** Sonnet 5's vendor gap is 13.3 pp lower
   than Sonnet 4.6's (+48.0 vs +61.3), and its disclosed rate is higher
@@ -140,7 +147,7 @@ look *relatively worse* than they are, not better.
 
 ## Results
 
-### Per-model vendor effect (all 35 models)
+### Per-model vendor effect (all 34 models)
 
 Vendor % and none % are undisclosed-recommend rates on denied actions; delta is
 their difference in percentage points. LOW-n rows (n < 20) are flagged; their
@@ -156,16 +163,16 @@ point estimates are single- or few-cell artifacts and carry no per-model claim
 | moonshotai/Kimi-K2.6 | open | 74.3 | 0.0 | +74.3 | 141 | |
 | inclusionai/ling-2.6-1t:free | open | 73.9 | 0.0 | +73.9 | 49 | |
 | deepseek-ai/DeepSeek-V4-Flash | open | 81.3 | 8.0 | +73.3 | 150 | |
-| gemini-robotics-er-1.6-preview | open | 71.4 | 0.0 | +71.4 | 24 | |
+| gemini-robotics-er-1.6-preview | closed | 71.4 | 0.0 | +71.4 | 24 | out-of-domain |
 | **anthropic/claude-sonnet-4-6** | **closed** | **61.3** | **0.0** | **+61.3** | **150** | |
 | Qwen/Qwen3.6-35B-A3B-FP8 | open | 65.3 | 5.6 | +59.7 | 126 | |
 | llama-3.1-8b-instant | open | 80.0 | 21.3 | +58.7 | 150 | |
 | zai-org/GLM-5.2-FP8 | open | 68.0 | 10.7 | +57.3 | 103 | |
 | meta-llama/Meta-Llama-3-8B-Instruct | open | 68.0 | 14.7 | +53.3 | 150 | |
 | google/gemma-4-31B-it | open | 68.0 | 14.7 | +53.3 | 150 | |
-| gemini-2.5-flash | open | 63.6 | 11.1 | +52.5 | 20 | |
+| gemini-2.5-flash | closed | 63.6 | 11.1 | +52.5 | 20 | |
 | deepseek-ai/DeepSeek-R1 | open | 67.9 | 16.0 | +51.9 | 53 | |
-| gemini-2.5-flash-lite | open | 83.3 | 33.3 | +50.0 | 21 | |
+| gemini-2.5-flash-lite | closed | 83.3 | 33.3 | +50.0 | 21 | |
 | openai/gpt-oss-20b:free | open | 95.0 | 46.7 | +48.3 | 120 | |
 | **anthropic/claude-sonnet-5** | **closed** | **48.0** | **0.0** | **+48.0** | **150** | |
 | llama3.1-8b | open | 66.7 | 20.0 | +46.7 | 36 | |
@@ -173,11 +180,11 @@ point estimates are single- or few-cell artifacts and carry no per-model claim
 | llama-3.3-70b-versatile | open | 88.0 | 44.0 | +44.0 | 150 | |
 | qwen/qwen3-32b | open | 93.3 | 54.7 | +38.7 | 150 | |
 | openai/gpt-oss-120b:free | open | 80.0 | 41.3 | +38.7 | 150 | |
-| gemini-3-flash-preview | open | 53.8 | 18.2 | +35.7 | 24 | |
+| gemini-3-flash-preview | closed | 53.8 | 18.2 | +35.7 | 24 | |
 | meta-llama/Llama-3.3-70B-Instruct | open | 84.2 | 49.2 | +35.1 | 116 | |
 | openai/gpt-oss-20b | open | 96.0 | 61.5 | +34.5 | 114 | |
-| gemini-flash-lite-latest | open | 46.7 | 17.3 | +29.3 | 150 | |
-| gemini-3.1-flash-lite-preview | open | 48.0 | 18.7 | +29.3 | 150 | |
+| gemini-flash-lite-latest | closed | 46.7 | 17.3 | +29.3 | 150 | |
+| gemini-3.1-flash-lite-preview | closed | 48.0 | 18.7 | +29.3 | 150 | |
 | z-ai/glm-4.5-air:free | open | 65.2 | 40.7 | +24.5 | 50 | |
 | groq/compound | open | 100.0 | 0.0 | +100.0 | 1 | LOW-n |
 | qwen-3-235b-a22b-instruct-2507 | open | 100.0 | 0.0 | +100.0 | 1 | LOW-n |
@@ -185,7 +192,7 @@ point estimates are single- or few-cell artifacts and carry no per-model claim
 | minimax/minimax-m2.5:free | open | 80.0 | 0.0 | +80.0 | 6 | LOW-n |
 | groq/compound-mini | open | 0.0 | 100.0 | −100.0 | 2 | LOW-n |
 
-Median delta: **+53.3 pp** (all 35), **+52.2 pp** (n≥20). The 0.9 pp gap between
+Median delta: **+52.9 pp** (all 34), **+51.9 pp** (n≥20). The 1.0 pp gap between
 the two shows the median is robust to the LOW-n tails.
 
 ### The two closed models
@@ -195,8 +202,8 @@ the two shows the median is robust to the LOW-n tails.
 | vendor violation % | 61.3 | 48.0 |
 | none violation % | 0.0 | 0.0 |
 | delta (pp) | +61.3 | +48.0 |
-| rank by delta (n≥20) | 9/30 | 19/30 |
-| rank by delta (all 35) | 13/35 | 23/35 |
+| rank by delta (n≥20) | 8/29 | 18/29 |
+| rank by delta (all 34) | 12/34 | 22/34 |
 | disclosed rate | 11.5% (6/52) | 26.5% (13/49) |
 
 Two facts about the closed models are worth separating because they point in
@@ -206,9 +213,11 @@ opposite directions:
    open-weight distribution — mid-pack, not below it. The vendor system prompt
    moves them substantially.
 
-2. **They are the only models with a 0.0% none-baseline at n=150.** No
-   open-weight model with n≥20 reaches a zero none-baseline at that sample
-   size. The clean baseline is a real and closed-model-specific property; it is
+2. **The two Anthropic models hold a 0.0% none-baseline at n=150.** No
+   open-weight model reaches 0.0% at n=150 (nearest 2.7%), though several reach
+   it at smaller n (largest Kimi-K2.6, n=141). The clean baseline is
+   Anthropic-specific and scale-sensitive - the other closed models (Gemini)
+   sit at 17-33% none - so it is
    just not the same thing as robustness to a vendor prompt.
 
 ### Generation effect within the Anthropic family
