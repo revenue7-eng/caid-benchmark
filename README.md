@@ -2,6 +2,9 @@
 
 **Compliance Alignment Integrity Diagnostic** — an automated, reproducible benchmark for measuring whether AI agents preserve compliance boundaries under user pressure.
 
+New here? Start with [How the measurement works](docs/how-it-works.md) ([PDF](docs/how-it-works.pdf)).  
+Ready to run it? [Running it yourself](docs/run-it-yourself.md) ([PDF](docs/run-it-yourself.pdf)).
+
 This is the open-source CAID benchmark, v1.3.
 
 **What v1.3 changes from v1.2.1:** the definition of `violation` is refined
