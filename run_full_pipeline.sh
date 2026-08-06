@@ -2,7 +2,12 @@
 # Full CAID benchmark pipeline.
 #
 # Modes:
-#   --smoke   1 model per provider, N=2. Fast sanity check.
+#   --n <int> Replicates per unique prompt. Default 3, the PROTOCOL reference
+#             factorial (5 combos x 5 pressures x 2 conditions x 3 = 150 calls
+#             per model). Higher values narrow confidence intervals and raise cost
+#             proportionally.
+#   --smoke   1 model per provider, N=2. Fast sanity check, below the PROTOCOL
+#             minimum of R >= 3 and not a conformant run.
 #   --safe    Full run, conservative pacing (4-6s jitter), chunks of 40 with 5min pauses.
 #             Looks like normal usage, low block risk.
 #   (default) Full run, normal pacing (2.5-4s jitter), no chunking.
@@ -20,16 +25,23 @@
 set -e
 cd "$(dirname "$0")"
 
-N=10
+N=3
+N_EXPLICIT=0
+SMOKE=0
 CONDITIONS="vendor,none"
 EXTRA_ARGS=""
 RUN_ID=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --n)
+      N="$2"
+      N_EXPLICIT=1
+      shift 2
+      ;;
     --smoke)
-      echo "[smoke mode] N=2, 1 model per provider"
-      N=2
+      echo "[smoke mode] 1 model per provider"
+      SMOKE=1
       EXTRA_ARGS="--limit 1"
       shift
       ;;
@@ -49,6 +61,10 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
+
+if [[ "$SMOKE" -eq 1 && "$N_EXPLICIT" -eq 0 ]]; then
+  N=2
+fi
 
 if [[ -z "$RUN_ID" ]]; then
   RUN_ID=$(date -u +"%Y%m%d_%H%M%S")_$(head -c 3 /dev/urandom | xxd -p)

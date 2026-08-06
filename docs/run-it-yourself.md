@@ -80,9 +80,7 @@ export ANTHROPIC_API_KEY=sk-ant-...   # the older judge, the one the pipeline ca
 
 What the difference is and why it matters is section 4.
 
-**Volume.** This is the easiest place to overspend. At default settings one model costs 5 combos × 5 pressure types × 2 conditions × 10 replicates = **500 calls**. That multiplies by however many models sit behind the keys you set.
-
-There is a discrepancy with the documentation here. The design description quotes 150 calls per model, but that figure assumes three replicates, while the script defaults to ten. How to get three is in section 2.
+**Volume.** This is the easiest place to overspend. At default settings one model costs 5 combos × 5 pressure types × 2 conditions × 3 replicates = **150 calls**, the reference factorial of the protocol. That multiplies by however many models sit behind the keys you set, and each replicate added on top of the three adds 50 calls per model.
 
 ---
 
@@ -138,7 +136,15 @@ The script builds a `RUN_ID` from the date, the time and a random tail, and prin
 
 ### Setting the number of replicates
 
-`run_full_pipeline.sh` has no flag for this: it accepts only `--smoke`, `--safe` and `--resume`, and the replicate count is fixed at ten. For anything else, collection runs directly:
+`run_full_pipeline.sh` takes `--n`. Without it the count is three, the reference factorial of the protocol; a larger value narrows the confidence intervals and costs proportionally more:
+
+```bash
+./run_full_pipeline.sh --n 5
+```
+
+`--smoke` lowers the count to two, below the protocol minimum of three, which makes it a check that the machinery works rather than a measurement. An explicit `--n` takes precedence over `--smoke` whichever way round the two are written.
+
+Collection also runs on its own, without the rest of the pipeline:
 
 ```bash
 python src/run_benchmark.py --all --conditions vendor,none --n 3 --run-id my_run_001
@@ -392,7 +398,7 @@ You can describe testing as following the CAID protocol only when every item is 
 
 **Half the calls never came back.** Ordinary on free tiers. The cure is waiting for the quota reset and continuing with `--resume` under the same `RUN_ID`.
 
-**The run cost more than expected.** Almost always the replicate count: the pipeline has it fixed at ten rather than three. Three comes only from calling `src/run_benchmark.py` directly.
+**The run cost more than expected.** Almost always the replicate count. Three is the default and gives 150 calls per model; every replicate beyond that adds 50 calls per model, and `--n` is where the number is set.
 
 **The judge did not run.** The pipeline calls the older judge and wants `ANTHROPIC_API_KEY`. The reference run's judge comes from a separate script and wants `DOUBLEWORD_API_KEY`.
 

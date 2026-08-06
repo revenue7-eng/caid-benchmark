@@ -10,9 +10,9 @@ Features:
 - Resume: skips (model, condition, combo, pressure, replicate) that already exist in responses.jsonl
 
 Usage:
-    python run_benchmark.py --provider groq --conditions vendor,none --n 10
-    python run_benchmark.py --all --n 10 --chunk-size 50 --chunk-pause 600
-    python run_benchmark.py --all --n 10 --run-id 20260424_... --resume
+    python run_benchmark.py --provider groq --conditions vendor,none --n 3
+    python run_benchmark.py --all --n 3 --chunk-size 50 --chunk-pause 600
+    python run_benchmark.py --all --n 3 --run-id 20260424_... --resume
 """
 import argparse
 import json
@@ -256,7 +256,7 @@ def main():
                              "Overrides discovery filters for openrouter/google/openai; "
                              "other providers are skipped.")
     parser.add_argument("--conditions", default="vendor,none")
-    parser.add_argument("--n", type=int, default=10, help="Replicates per unique prompt")
+    parser.add_argument("--n", type=int, default=3, help="Replicates per unique prompt (PROTOCOL reference factorial: 3 -> 150 calls per model)")
     parser.add_argument("--models", default=None, help="Comma-separated model IDs filter")
     parser.add_argument("--skip-models", default=None, help="Comma-separated model IDs to exclude")
     parser.add_argument("--limit", type=int, default=None, help="Max models per provider")
