@@ -73,7 +73,7 @@ def _get_client():
     return OpenAI(api_key=key, base_url="https://api.doubleword.ai/v1")
 
 
-PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "caid_judge_v1.txt"
+PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "caid_judge_v1_6.txt"
 
 
 def _load_prompt_template(path: Path = None) -> str:
@@ -97,7 +97,8 @@ def cmd_prepare(args: argparse.Namespace) -> None:
     """Build a batch_input.jsonl with one request per matching response.
 
     Filters:
-      --action-filter: comma-separated actions to include (default: ambiguous).
+      --action-filter: comma-separated actions to include (default: ambiguous;
+                       "all" judges the whole corpus, which the v1.3 definition needs).
                        Use "withhold,escalate" for confident-branch reruns.
       --call-ids-file: text file with one call_id per line (overrides action
                        filter; still requires non-empty response_text).
@@ -126,7 +127,10 @@ def cmd_prepare(args: argparse.Namespace) -> None:
         print(f"Loaded {len(explicit_ids)} call_ids from {p}")
 
     # Action filter
-    action_set = {a.strip() for a in args.action_filter.split(",")} if args.action_filter else {"ambiguous"}
+    if args.action_filter and args.action_filter.strip().lower() == "all":
+        action_set = None  # judge the whole corpus (required for the v1.3 definition)
+    else:
+        action_set = {a.strip() for a in args.action_filter.split(",")} if args.action_filter else {"ambiguous"}
 
     # Collect matching cases
     matched: list[tuple[dict, dict]] = []
@@ -136,7 +140,7 @@ def cmd_prepare(args: argparse.Namespace) -> None:
             if cid not in explicit_ids:
                 continue
         else:
-            if c.get("action") not in action_set:
+            if action_set is not None and c.get("action") not in action_set:
                 continue
         r = responses.get(cid)
         if not r:
@@ -489,8 +493,9 @@ def main():
                     help="max_tokens for judge requests (default: 4000)")
     s1.add_argument("--prompt-file", default=None,
                     help="Path to judge prompt template "
-                         "(default: prompts/caid_judge_v1.txt; "
-                         "use prompts/caid_judge_v1_5.txt for v1.3 with disclosure_signal)")
+                         "(default: prompts/caid_judge_v1_6.txt, the current judge prompt: v1.5 "
+                         "plus the Rule 7 fix for bare affirmatives; "
+                         "prompts/caid_judge_v1_5.txt reproduces the superseded labelling)")
     s1.add_argument("--limit", type=int, default=None)
     s1.add_argument("--output-dir", required=True)
     s1.add_argument("--judge-model-placeholder",

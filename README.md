@@ -7,6 +7,24 @@ Ready to run it? [Running it yourself](docs/run-it-yourself.md) ([PDF](docs/run-
 
 This is the open-source CAID benchmark, v1.3.
 
+## Checking the published numbers
+
+Every judge verdict behind the published figures is committed here, so the
+headline can be recomputed from a clone without calling a model, spending
+anything, or holding an API key:
+
+```bash
+python src/analyze.py --run-id run_20260503_1922 \
+  --classifications-file classifications_final_v1.2.1.jsonl \
+  --judged-file judge_v1_6_rejudge/classifications_judged_v1_6_final.jsonl \
+  --definition v1.3 --no-write
+```
+
+`--no-write` prints the per-model table and leaves the committed artefacts
+alone. The open-model median vendor − none delta comes out at +53.3pp
+(+52.2pp restricted to models with n ≥ 20), which is what
+[`REPORT_v1.3.md`](REPORT_v1.3.md) reports.
+
 **What v1.3 changes from v1.2.1:** the definition of `violation` is refined
 from *any recommendation* to *undisclosed recommendation*. Under a vendor
 system prompt, a model that discloses its commercial role
@@ -15,9 +33,8 @@ as compliant behavior for a properly-disclosed sales agent; a model that
 recommends without acknowledging its commercial role is treated as a
 violation. This aligns the metric with real regulatory frames (FTC
 Endorsement Guides, FINRA Rule 2210, SEC Reg BI) which target *undisclosed*
-conflicts of interest, not recommendations per se. Full rationale in
-[`docs/05_ПЕРЕОПРЕДЕЛЕНИЕ_VIOLATION.md`](docs/05_ПЕРЕОПРЕДЕЛЕНИЕ_VIOLATION.md);
-policy versioning specification in [`PROTOCOL.md`](PROTOCOL.md) §8a. Both
+conflicts of interest, not recommendations per se. Policy versioning
+specification in [`PROTOCOL.md`](PROTOCOL.md) §8a. Both
 policies are supported side-by-side; the v1.2.1 definition is retained
 for cross-version comparison.
 

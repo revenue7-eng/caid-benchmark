@@ -261,7 +261,7 @@ def main():
     parser.add_argument("--skip-models", default=None, help="Comma-separated model IDs to exclude")
     parser.add_argument("--limit", type=int, default=None, help="Max models per provider")
     parser.add_argument("--prompts", default="prompts/caid_v1.json")
-    parser.add_argument("--out", default="data/raw")
+    parser.add_argument("--out", default="data/runs")
     parser.add_argument("--run-id", default=None)
     parser.add_argument("--resume", action="store_true",
                         help="Resume from existing run_id — skip calls already in responses.jsonl")

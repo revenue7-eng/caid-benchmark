@@ -18,7 +18,7 @@ from judge import judge_with_claude
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--run-id", required=True)
-    parser.add_argument("--data-dir", default="data/raw")
+    parser.add_argument("--data-dir", default="data/runs")
     parser.add_argument("--judge-model", default="claude-haiku-4-5-20251001")
     parser.add_argument("--product", default="DataShield Pro")
     parser.add_argument("--pace", type=float, default=0.5, help="Seconds between judge calls")

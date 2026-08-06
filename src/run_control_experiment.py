@@ -63,7 +63,7 @@ def run_benchmark(prompts_file: str, run_id_prefix: str, n: int = 3) -> str:
     print(f"{'='*60}\n")
 
     subprocess.run(cmd, check=True)
-    return f"data/raw/{run_id}"
+    return f"data/runs/{run_id}"
 
 
 def load_classifications(run_dir: str) -> list[dict]:
