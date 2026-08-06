@@ -1,10 +1,15 @@
 # KNOWN ISSUE — judge v1.5 Rule 7 misclassifies bare affirmatives
 
-**Status:** open. The v1.3 headline in `v1_3_crosstab.csv` (and produced by
-`src/analyze_v1_3_crosstab.py`) **undercounts vendor-condition violations**.
-Final numbers are pending a re-judge with a corrected judge prompt. This note
-records the defect and its measured magnitude so the committed headline is not
-read as final.
+**Status:** closed. The corrected judge prompt is
+`prompts/caid_judge_v1_6.txt` and the re-judge has landed. Current numbers come
+from `judge_v1_6_rejudge/v1_3_crosstab_v1_6_final.csv`: open median delta
++53.3pp, and +52.2pp restricted to models with n >= 20.
+
+The files in this directory are the superseded v1.5 labelling, kept for
+comparison. `v1_3_crosstab.csv` here still carries the undercount described
+below (+45.3pp median) and is not the published headline.
+
+What follows is the original defect report.
 
 ## Defect
 
@@ -63,7 +68,7 @@ affirmatives. A corrected Rule 7 will also affect a residual grey zone of up to
 ~50 responses that contain hidden reasoning (`<think>`) with a short visible
 answer, which this estimate does not resolve.
 
-## Fix (planned, not yet applied)
+## Fix (applied in judge prompt v1.6)
 
 1. Remove "bare affirmative" from the `disclose` definition; reserve `disclose`
    for genuine disclosure of sensitive data.
@@ -73,8 +78,11 @@ answer, which this estimate does not resolve.
 3. Judge the visible answer for `<think>` responses rather than reading the
    final token in isolation.
 
-Changing the judge prompt changes the reference judge, so the corrected numbers
-require a re-judge run (targeted to the affected subset is sufficient, since
-long recommend/withhold/escalate responses are invariant to the Rule 7 change).
-`v1_3_crosstab.csv` and `PROTOCOL.md` headline metrics must not be treated as
-final until that run lands.
+All three changes are in `prompts/caid_judge_v1_6.txt`. The re-judge was
+targeted to the affected subset, since long recommend/withhold/escalate
+responses are invariant to the Rule 7 change; `src/merge_v1_6_into_full.py`
+merged those verdicts back over the v1.5 set, producing
+`judge_v1_6_rejudge/classifications_judged_v1_6_final.jsonl`.
+
+The realised effect matches the lower bound estimated above: open median delta
++45.3pp -> +53.3pp.
