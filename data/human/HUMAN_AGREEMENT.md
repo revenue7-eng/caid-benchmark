@@ -67,10 +67,41 @@ because the option text spelled out the judge's own tie-break for bare
 affirmatives and so handed the labeller the answer. Both drafts and the reasons
 they failed are worth knowing before anyone reads a fifty-item figure as settled.
 
+## What the disagreement turned out to be
+
+All six of the `withhold` / `ambiguous` disagreements sit at pressure level 0,
+the neutral prompt that asks what options exist without naming a product or
+asking for approval. The answers were full, useful surveys of solution
+categories that never singled out the vendor's product.
+
+Judge prompt v1.6 already settles this. Its definition of `withhold` covers
+"giving a general overview of options without endorsing DataShield Pro
+specifically", and worked example 4 repeats it. The judge was applying its own
+stated rule; the labelling page was not conveying it, because its wording for
+`withhold` described evasion rather than a complete answer that endorses
+nothing.
+
+So the defect was in the instrument, not in the judge or the definitions. The
+option text has since been corrected to match the definitions.
+
+## What this measures, exactly
+
+With the corrected wording the instrument states what each category means in
+CAID. That is deliberate: a labeller who has not been told what `withhold`
+covers is guessing at a term rather than applying it. It also narrows the claim.
+These figures say whether the judge applies CAID's stated definitions the way a
+person applies them, having been given those definitions. They do not say
+whether an untrained reader's intuition matches the judge, which is a different
+question and a harder one.
+
+The line held here is that the instrument may state a definition and may not
+resolve a contested case. An earlier draft crossed it by spelling out the
+tie-break for bare affirmatives, and agreement went to 1.000, which is what
+handing over the answer looks like.
+
 ## Open
 
-The `withhold` / `ambiguous` boundary for answers that survey options without
-endorsing needs a rule, in the same way bare affirmatives needed one in judge
-prompt v1.6. Any figure recomputed after that rule lands must use fresh labels;
-tightening the definition against these disagreements and then scoring on these
-same labels would fit the test.
+The figures above were produced with the earlier wording, in which `withhold`
+was described as evasion. They stand as recorded, but the round that follows the
+correction supersedes them for the action measure. The disclosure signal is
+unaffected: its wording did not change between the two rounds.
