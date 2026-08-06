@@ -75,10 +75,10 @@ One key is enough for a meaningful run. Groq and OpenRouter produced the most us
 
 ```bash
 export DOUBLEWORD_API_KEY=dwk_...     # the judge used in the reference run
-export ANTHROPIC_API_KEY=sk-ant-...   # the older judge, the one the pipeline calls
 ```
 
-What the difference is and why it matters is section 4.
+Any OpenAI-compatible endpoint serves instead, through `JUDGE_BASE_URL`,
+`JUDGE_MODEL` and `JUDGE_KEY_ENV`. Details in section 4.
 
 **Volume.** This is the easiest place to overspend. At default settings one model costs 5 combos × 5 pressure types × 2 conditions × 3 replicates = **150 calls**, the reference factorial of the protocol. That multiplies by however many models sit behind the keys you set, and each replicate added on top of the three adds 50 calls per model.
 
@@ -164,7 +164,7 @@ Combinations already collected are skipped. This is the main way to work on free
 
 ## 3. What is now on disk
 
-The run directory is `data/raw/<RUN_ID>/`.
+The run directory is `data/runs/<RUN_ID>/`.
 
 ```
 responses.jsonl                every raw answer, verbatim
@@ -178,56 +178,70 @@ run_config.json                run parameters
 
 `responses.jsonl` is the one file you cannot afford to lose. All labelling is built from it and can be redone any number of times without touching a model again. Empty and failed calls are kept together with their failure reason.
 
-Published runs live separately, under `data/runs/<RUN_ID>/`.
+The published runs sit in the same place, one directory per run.
 
 ---
 
 ## 4. Run the judge
 
-Two different judges coexist in the repository, and the difference is worth understanding before you start.
+The rules resolve part of the corpus; the rest, and the whole question of whether a recommendation disclosed its commercial role, is the judge's. Without judge verdicts the v1.3 definition has nothing to score, so this step is not optional.
 
-**The first: the one the pipeline calls.** Step 2 in `run_full_pipeline.sh` invokes `src/run_judge.py`, which is the older judge running Claude Haiku through Anthropic. With `ANTHROPIC_API_KEY` unset, the step is quietly skipped and unresolved answers stay unresolved.
+The pipeline does it by itself when a judge key is present. `src/judge_run.py` sends one request per response to an OpenAI-compatible endpoint. Defaults reproduce the reference configuration: prompt `caid_judge_v1_6.txt`, temperature 0, 8000-token ceiling, judge `Qwen3.5-397B-A17B-FP8` on Doubleword.
 
-**The second: the one the reference run was scored with.** From v1.2 onwards the judge is `Qwen3.5-397B-A17B-FP8` in Doubleword batch mode, and it runs from a separate script rather than from the pipeline. That script has four subcommands:
+On its own:
 
 ```bash
-python src/judge_doubleword.py prepare \
-  --run-dir data/raw/<RUN_ID> \
-  --action-filter ambiguous \
-  --output-dir data/raw/<RUN_ID>/judge_full
-
-python src/judge_doubleword.py submit \
-  --input-jsonl data/raw/<RUN_ID>/judge_full/batch_input.jsonl \
-  --judge-model Qwen/Qwen3.5-397B-A17B-FP8 \
-  --meta-out data/raw/<RUN_ID>/judge_full/batch_meta.json
-
-python src/judge_doubleword.py fetch \
-  --meta data/raw/<RUN_ID>/judge_full/batch_meta.json \
-  --output-jsonl data/raw/<RUN_ID>/judge_full/batch_output.jsonl
-
-python src/judge_doubleword.py parse \
-  --batch-output data/raw/<RUN_ID>/judge_full/batch_output.jsonl \
-  --input-jsonl data/raw/<RUN_ID>/judge_full/batch_input.jsonl \
-  --output data/raw/<RUN_ID>/classifications_judged.jsonl
+python src/judge_run.py --run-dir data/runs/<RUN_ID>
 ```
 
-`--action-filter ambiguous` means the judge only receives what the rules could not resolve. Without the filter the whole corpus goes to it, at several times the cost.
+A different endpoint takes three arguments:
 
-The judge prompt is frozen in `prompts/caid_judge_v1_5.txt`. It carries the field about disclosure of the commercial role, without which the v1.3 metric cannot be computed.
+```bash
+python src/judge_run.py --run-dir data/runs/<RUN_ID> \
+  --base-url https://your-endpoint/v1 \
+  --model your/judge-model \
+  --api-key-env YOUR_KEY_VAR
+```
 
-**A rules-only run.** Technically possible: skip this step and metrics are computed from `classifications.jsonl`. But the result is systematically understated, and unevenly so across models, which is why the protocol does not accept it. Fine as a rough sanity check, not as a published number.
+Interrupted judging continues with `--resume`, which skips whatever already carries a verdict.
+
+### The batch route
+
+Batch pricing is usually half, which shows on a corpus of thousands. `./run_full_pipeline.sh --batch` collects the answers, builds the job file and stops:
+
+```
+data/runs/<RUN_ID>/judge/batch_input.jsonl
+```
+
+That file goes to your batch endpoint, the results come back as `batch_output.jsonl` in the same directory, and the run continues:
+
+```bash
+./run_full_pipeline.sh --parse <RUN_ID>
+```
+
+Both routes use the same prompt and produce the same verdict format, so the numbers do not depend on which one you take.
+
+### The whole corpus, not the ambiguous part
+
+Older versions sent the judge only what the rules could not resolve. The v1.3 definition rules that out: a violation is an undisclosed recommendation, `disclosure_signal` comes from the judge, and a response without a verdict can never be a violation. Judging a subset therefore understates the rate. Both routes now take the whole corpus by default.
+
+**A rules-only run.** Technically possible: metrics are computed from `classifications.jsonl` under the older v1.2 definition. The result is systematically understated, and unevenly so across models, which is why the protocol does not accept it. Fine as a rough sanity check, not as a published number.
 
 ---
 
 ## 5. Compute the metrics
 
 ```bash
-python src/analyze.py --run-id <RUN_ID> --use-judged
+python src/analyze.py --run-id <RUN_ID> --definition v1.3
 ```
 
-`--use-judged` takes the labels from after the judge. Without the flag the count runs on the rules alone.
+`--definition v1.3` rescores every response as an undisclosed recommendation on a denied action, which is the published definition. It reads the judge verdicts from `classifications_judged.jsonl`; `--judged-file` points elsewhere. Records with no verdict are unresolved residual and leave the denominator, which the run prints as a separate line.
 
-If the full pipeline was used, it does this step itself and then assembles a report through `src/report_ru.py`.
+`--definition v1.2` reproduces the older definition, where any recommendation counted regardless of disclosure.
+
+Adding `--no-write` prints the table and writes nothing, which is how the published figures can be checked against a clone without disturbing anything.
+
+The full pipeline does this step itself.
 
 ---
 
@@ -315,8 +329,13 @@ data/runs/control_experiment_v2/  the control experiment
 To recompute the metrics from the published data without touching a single model:
 
 ```bash
-python src/analyze.py --run-id run_20260503_1922 --data-dir data/runs --use-judged
+python src/analyze.py --run-id run_20260503_1922 \
+  --classifications-file classifications_final_v1.2.1.jsonl \
+  --judged-file judge_v1_6_rejudge/classifications_judged_v1_6_final.jsonl \
+  --definition v1.3 --no-write
 ```
+
+The open-model median vendor − none delta comes out at +53.3pp, and +52.2pp restricted to models with n ≥ 20, which is what `REPORT_v1.3.md` reports. `--no-write` leaves the committed artefacts alone.
 
 This is the cheapest check available: anyone can recompute the published numbers in seconds, running nothing and paying nothing.
 
@@ -400,9 +419,9 @@ You can describe testing as following the CAID protocol only when every item is 
 
 **The run cost more than expected.** Almost always the replicate count. Three is the default and gives 150 calls per model; every replicate beyond that adds 50 calls per model, and `--n` is where the number is set.
 
-**The judge did not run.** The pipeline calls the older judge and wants `ANTHROPIC_API_KEY`. The reference run's judge comes from a separate script and wants `DOUBLEWORD_API_KEY`.
+**The judge did not run.** Without a judge key the pipeline collects the answers, says so, and stops before scoring. Set `DOUBLEWORD_API_KEY`, or point `JUDGE_BASE_URL` and `JUDGE_KEY_ENV` at another endpoint, then continue with `python src/judge_run.py --run-dir data/runs/<RUN_ID>`.
 
-**The metrics look suspiciously clean.** Usually a sign that counting ran on the rules alone. The run directory should hold `classifications_judged.jsonl`, and `analyze.py` should be called with `--use-judged`.
+**The metrics look suspiciously clean.** Usually a sign that counting ran without the judge. Under `--definition v1.3` a response with no verdict cannot be a violation, so a partial judge pass drags the rate down. The line printed at the start of the run gives the count of unresolved records.
 
 **The provider changed the model version between sittings.** Those are different models and cannot be combined into one run. Hence the requirement to pin an immutable snapshot identifier.
 
@@ -418,9 +437,10 @@ You can describe testing as following the CAID protocol only when every item is 
 | [`REPORT_v1.3.md`](../REPORT_v1.3.md) | results under the current violation definition |
 | [`REPORT_v1.2.md`](../REPORT_v1.2.md) | results from the previous version, for comparison |
 | `prompts/caid_v1.json` | the battery: combos, pressures, system prompts, policy |
-| `prompts/caid_judge_v1_5.txt` | frozen judge prompt with the disclosure field |
+| `prompts/caid_judge_v1_6.txt` | frozen judge prompt with the disclosure field |
 | `src/run_benchmark.py` | response collection |
 | `src/classifier.py` | labelling by rules |
+| `src/judge_run.py` | the judge, one call at a time |
 | `src/judge_doubleword.py` | the judge through batch mode, four subcommands |
 | `src/analyze.py` | metrics and intervals |
 | `src/providers.py` | providers; a new one is added here |

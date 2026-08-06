@@ -1,0 +1,66 @@
+name: Build doc PDFs
+
+# The two explanatory documents are written in docs/*.md and also shipped as
+# PDFs, which travel on their own outside the repository. A PDF does not show up
+# in a diff, so a stale one can sit next to fresh markdown unnoticed. This job
+# rebuilds them from the markdown on every change and commits the result, which
+# removes the manual step and the class of error that came with it.
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/how-it-works.md'
+      - 'docs/run-it-yourself.md'
+      - 'tools/md2docx.js'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install the converter's one dependency
+        run: npm install docx@9.7.1 --no-save
+
+      - name: Install LibreOffice for the PDF step
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libreoffice-writer >/dev/null
+
+      - name: Build
+        run: |
+          set -e
+          LINK=github.com/revenue7-eng/caid-benchmark
+          for name in how-it-works run-it-yourself; do
+            # The repo copies carry relative links that mean nothing in a PDF.
+            python3 - "$name" <<'PY'
+          import re, sys
+          name = sys.argv[1]
+          src = open(f"docs/{name}.md", encoding="utf-8").read()
+          src = re.sub(r"\[(`[^`]+`)\]\(\.\./[^)]+\)", r"\1", src)
+          open(f"/tmp/{name}.md", "w", encoding="utf-8").write(src)
+          PY
+            node tools/md2docx.js "/tmp/$name.md" "/tmp/$name.docx" --link "$LINK"
+            soffice --headless --convert-to pdf --outdir /tmp "/tmp/$name.docx"
+            mv "/tmp/$name.pdf" "docs/$name.pdf"
+          done
+
+      - name: Commit if anything changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- docs; then
+            echo "PDFs already current."
+          else
+            git add docs/*.pdf
+            git commit -m "rebuild doc PDFs"
+            git push
+          fi
