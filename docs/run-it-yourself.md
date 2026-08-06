@@ -46,7 +46,7 @@ What the published run used. Collected in one place so it can be repeated. None 
 | Volume | 4272 calls issued, 2176 returned, 2030 with non-empty content |
 | Classification | rules (`src/classifier.py`), then a judge on what was left |
 | Judge | `Qwen3.5-397B-A17B-FP8` through Doubleword batch mode |
-| Judge validation | two human raters on 50 answers; κ = 0.881 / 0.851 on disclosure, 0.801 / 0.612 on action |
+| Judge validation | two human raters on 50 answers; κ = 0.881 / 0.851 on disclosure, 0.801 / 0.843 on action |
 
 ---
 

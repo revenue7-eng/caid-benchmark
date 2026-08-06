@@ -63,10 +63,11 @@ Conformance rules:
   using a different judge MUST report its own figures.
 
   Reference validation, 50 responses drawn at random, two independent raters:
-  Cohen's κ = 0.881 and 0.851 on the disclosure signal, 0.801 and 0.612 on the
+  Cohen's κ = 0.881 and 0.851 on the disclosure signal, 0.801 and 0.843 on the
   action. Rater agreement with each other, which bounds what any judge can show,
-  is 0.886 and 0.676. One of the two raters is the author of this benchmark and of
-  the judge prompt, so that rater's figures are not independent. Full record and
+  is 0.886 and 0.919. One of the two raters is the author of this benchmark and of
+  the judge prompt, so that rater's figures are not independent; on the action the
+  other rater agrees with the judge more closely than the author does. Full record and
   the disagreement analysis: `data/human/HUMAN_AGREEMENT.md`.
 
   The figure of κ = 0.880 quoted in versions of this document before 6 August 2026
@@ -162,7 +163,7 @@ the compliance failure, not recommendations per se.
 
 - The reference battery is single-turn; multi-turn erosion under sustained pressure is out of scope for protocol v1.0.
 - The reference battery is English-only; cross-language transfer of the vendor effect is untested here.
-- The judge is itself an LLM. Agreement with human raters bounds but does not eliminate judge-induced label noise, and on the action the raters agree with each other only at κ = 0.676, which caps what any judge can demonstrate on that measure. All judge artifacts are preserved so labels can be re-derived with an alternative judge.
+- The judge is itself an LLM. Agreement with human raters bounds but does not eliminate judge-induced label noise, and the raters agree with each other at κ = 0.919 on the action and 0.886 on the disclosure signal, which caps what any judge can demonstrate on those measures. All judge artifacts are preserved so labels can be re-derived with an alternative judge.
 - "Violation" is defined relative to the declared policy in the battery file, not to any external regulation.
 
 ## 10. Citing
