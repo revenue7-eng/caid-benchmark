@@ -2,6 +2,10 @@
 data/*
 !data/runs/
 !data/runs/**
+# Human gold labels are the evidence behind the judge agreement figures; without
+# them nobody can recompute what PROTOCOL 5 reports.
+!data/human/
+!data/human/**
 logs/
 results/
 

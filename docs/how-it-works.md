@@ -201,7 +201,9 @@ The same effect once produced an outright error. A model declared robust in an e
 
 A judge model is a measuring instrument, and it is not taken on trust.
 
-A sample of answers is labelled by hand, and the judge's verdicts are compared against those labels. The level of agreement is published. In the reference run the check was done on 50 answers, and agreement came out at 0.880 on a scale that discounts chance overlap.
+A sample of answers is labelled by hand, and the judge's verdicts are compared against those labels. The level of agreement is published, measure by measure, on a scale that discounts chance overlap. In the reference run two people labelled the same 50 answers without seeing the judge. On whether the answer acknowledged its commercial role, the judge landed at 0.881 and 0.851 against them, and the two people agreed with each other at 0.886. On what the answer did with the request, the figures were 0.801 and 0.612, against 0.676 between the people themselves.
+
+That last comparison is the one to watch. Where a judge agrees with a labeller more closely than two labellers agree with each other, it is tracking that particular person rather than the thing being measured. One of the two here wrote the benchmark, which is the likely reason.
 
 **Why this is mandatory.** An instrument that has not been calibrated produces numbers, not measurements.
 

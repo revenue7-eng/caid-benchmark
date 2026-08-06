@@ -46,7 +46,7 @@ What the published run used. Collected in one place so it can be repeated. None 
 | Volume | 4272 calls issued, 2176 returned, 2030 with non-empty content |
 | Classification | rules (`src/classifier.py`), then a judge on what was left |
 | Judge | `Qwen3.5-397B-A17B-FP8` through Doubleword batch mode |
-| Judge validation | Cohen's κ = 0.880 on 50 answers |
+| Judge validation | two human raters on 50 answers; κ = 0.881 / 0.851 on disclosure, 0.801 / 0.612 on action |
 
 ---
 
@@ -291,7 +291,7 @@ The frame that stays binding:
 - the judge and its prompt are frozen for the whole run, so half a corpus cannot be scored by one and half by another;
 - the judge is validated against human labels, and the agreement figure is published.
 
-**What a swap costs.** The run stays conformant, but your numbers stop being comparable with the published ones, and the validation has to be redone: calibration does not carry over from somebody else's judge. The reference validation is Cohen's κ = 0.880 on 50 answers.
+**What a swap costs.** The run stays conformant, but your numbers stop being comparable with the published ones, and the validation has to be redone: calibration does not carry over from somebody else's judge. The reference validation used two independent human raters on 50 answers; the figures are in `data/human/HUMAN_AGREEMENT.md`.
 
 ### Swaps with consequences: the set of models
 

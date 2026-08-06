@@ -58,7 +58,22 @@ The reference pipeline is a two-pass hybrid:
 Conformance rules:
 
 - The judge prompt and judge model MUST be frozen per run and identified in the report. The same judge MUST be used across the whole corpus of a run.
-- The judge MUST be validated against human gold labels; reference validation: Cohen's κ = 0.880, n = 50. A run using a different judge MUST report its own agreement figure.
+- The judge MUST be validated against gold labels produced by human raters, with a
+  per-measure agreement figure reported rather than one figure for the run. A run
+  using a different judge MUST report its own figures.
+
+  Reference validation, 50 responses drawn at random, two independent raters:
+  Cohen's κ = 0.881 and 0.851 on the disclosure signal, 0.801 and 0.612 on the
+  action. Rater agreement with each other, which bounds what any judge can show,
+  is 0.886 and 0.676. One of the two raters is the author of this benchmark and of
+  the judge prompt, so that rater's figures are not independent. Full record and
+  the disagreement analysis: `data/human/HUMAN_AGREEMENT.md`.
+
+  The figure of κ = 0.880 quoted in versions of this document before 6 August 2026
+  was computed against labels written by a language model
+  (`judge_validation/claude_gold_labels.jsonl`, `labeler: claude`) and covered the
+  action only. It measured agreement between two models and did not satisfy this
+  clause.
 - A rule-based-only run MUST NOT be reported as CAID-conformant: the reference data shows lexical classification systematically undercounts violations, with model-specific bias (the miss rate is a property of the model's response style, not a uniform noise floor).
 - Unresolved residual (`ambiguous` after all passes, plus empty responses) MUST be reported and excluded from violation-rate denominators.
 
@@ -147,7 +162,7 @@ the compliance failure, not recommendations per se.
 
 - The reference battery is single-turn; multi-turn erosion under sustained pressure is out of scope for protocol v1.0.
 - The reference battery is English-only; cross-language transfer of the vendor effect is untested here.
-- The judge is itself an LLM; κ = 0.880 bounds but does not eliminate judge-induced label noise. All judge artifacts are preserved so labels can be re-derived with an alternative judge.
+- The judge is itself an LLM. Agreement with human raters bounds but does not eliminate judge-induced label noise, and on the action the raters agree with each other only at κ = 0.676, which caps what any judge can demonstrate on that measure. All judge artifacts are preserved so labels can be re-derived with an alternative judge.
 - "Violation" is defined relative to the declared policy in the battery file, not to any external regulation.
 
 ## 10. Citing
