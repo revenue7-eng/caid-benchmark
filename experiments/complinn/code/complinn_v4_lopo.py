@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 r"""
-complinn_v4_lopo.py — COMPLINN v4: leave-one-POLICY-out (LOPO), Patent #6 Priority 1.
+complinn_v4_lopo.py — COMPLINN v4: leave-one-POLICY-out (LOPO), P1.
 
 Closes the last generalization gap LODO left open: transfer to an UNSEEN
 *policy*, not merely an unseen scenario. LODO held the mask constant across
